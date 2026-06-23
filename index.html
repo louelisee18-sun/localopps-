@@ -19,11 +19,39 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{font-size:16px;height:100%}
 body{font-family:'Sora',sans-serif;background:var(--surface);color:var(--texte);
-  max-width:430px;margin:0 auto;min-height:100vh;position:relative;overflow-x:hidden}
+  min-height:100vh;position:relative;overflow-x:hidden}
 a{color:inherit;text-decoration:none}button{cursor:pointer;border:none;background:none;font-family:inherit}
 input,select,textarea{font-family:inherit;outline:none}
 img{display:block;max-width:100%}
 .truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ============ CONTENEUR APP MOBILE (cadré sur desktop) ============ */
+#app-shell{max-width:430px;margin:0 auto;min-height:100vh;position:relative;
+  background:var(--surface);overflow-x:hidden}
+
+@media (min-width:900px){
+  body.in-app{background:#0F1F17;
+    background-image:radial-gradient(circle at 20% 20%, rgba(26,138,86,.15), transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(249,115,22,.08), transparent 50%);
+  }
+  body.in-app #app-shell{
+    margin:32px auto;min-height:calc(100vh - 64px);
+    border-radius:32px;box-shadow:0 30px 80px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.06);
+    border:6px solid #15291F;
+  }
+  body.in-app::before{
+    content:'LocalOpps — Aperçu mobile';
+    position:fixed;top:14px;left:50%;transform:translateX(-50%);
+    color:rgba(255,255,255,.4);font-size:12px;font-weight:500;letter-spacing:.04em;
+    font-family:'Sora',sans-serif;z-index:1;
+  }
+  body.in-app::after{
+    content:'💻 Vous êtes sur ordinateur — cette application est conçue mobile-first. Réduisez votre fenêtre pour la voir en plein écran, ou continuez ici dans son cadre.';
+    position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
+    color:rgba(255,255,255,.35);font-size:11px;max-width:380px;text-align:center;
+    font-family:'Sora',sans-serif;z-index:1;line-height:1.5;
+  }
+}
 
 /* Animations */
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -81,8 +109,8 @@ img{display:block;max-width:100%}
 .card:active{transform:scale(.99)}
 
 /* Navigation bas */
-#nav-bas{position:fixed;bottom:0;left:50%;transform:translateX(-50%);
-  width:100%;max-width:430px;background:var(--blanc);
+#nav-bas{position:sticky;bottom:0;left:0;
+  width:100%;background:var(--blanc);
   border-top:1px solid var(--border);display:flex;align-items:center;
   padding:6px 0 20px;z-index:100}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
@@ -319,14 +347,309 @@ img{display:block;max-width:100%}
 .vide-state{text-align:center;padding:60px 24px;color:var(--texte3)}
 .spinner{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.3);
   border-top-color:#fff;animation:spin .7s linear infinite;display:inline-block}
+
+/* ============================================================ */
+/*  LANDING PAGE — pleine largeur                                */
+/* ============================================================ */
+#landing{background:var(--surface);color:var(--texte)}
+.land-section-inner{max-width:1140px;margin:0 auto;padding:0 32px}
+.land-kicker{display:inline-block;font-size:13px;font-weight:700;color:var(--vert);
+  letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px}
+
+/* Nav */
+.land-nav{position:sticky;top:0;z-index:200;background:rgba(247,250,248,.85);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.land-nav-inner{max-width:1140px;margin:0 auto;padding:16px 32px;
+  display:flex;align-items:center;gap:32px}
+.land-logo{font-size:21px;font-weight:800;color:var(--vert);letter-spacing:-.02em}
+.land-logo span{color:var(--orange)}
+.land-nav-links{display:flex;gap:28px;flex:1}
+.land-nav-links a{font-size:14px;font-weight:500;color:var(--texte2);transition:color .15s}
+.land-nav-links a:hover{color:var(--vert)}
+.land-nav-actions{display:flex;gap:10px}
+.land-nav-actions .btn{height:40px;font-size:13px;padding:0 18px}
+
+/* Hero */
+.land-hero{padding:80px 0 60px;overflow:hidden;position:relative}
+.land-hero-inner{max-width:1140px;margin:0 auto;padding:0 32px;
+  display:grid;grid-template-columns:1.1fr 0.9fr;gap:60px;align-items:center}
+.land-badge{display:inline-flex;align-items:center;gap:6px;background:var(--vert-p);
+  color:var(--vert);font-size:13px;font-weight:600;padding:7px 16px;
+  border-radius:var(--rf);margin-bottom:24px}
+.land-hero-text h1{font-size:44px;font-weight:800;line-height:1.15;letter-spacing:-.02em;margin-bottom:20px}
+.land-hero-text h1 span{color:var(--vert)}
+.land-hero-text p{font-size:16px;color:var(--texte2);line-height:1.7;max-width:480px;margin-bottom:28px}
+.land-hero-cta{display:flex;gap:12px;margin-bottom:40px;flex-wrap:wrap}
+.land-stats{display:flex;gap:36px}
+.land-stats div{display:flex;flex-direction:column}
+.land-stats strong{font-size:24px;font-weight:800;color:var(--vert)}
+.land-stats span{font-size:12px;color:var(--texte3);margin-top:2px}
+
+.land-hero-visual{position:relative;display:flex;justify-content:center}
+.phone-mock{width:280px;background:#0F1F17;border-radius:36px;padding:14px;
+  box-shadow:0 40px 80px -20px rgba(11,94,58,.35);position:relative}
+.phone-mock-notch{width:80px;height:18px;background:#0F1F17;border-radius:0 0 14px 14px;
+  position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:2}
+.phone-mock-screen{background:var(--surface);border-radius:24px;overflow:hidden;
+  padding-top:18px}
+.land-float-card{position:absolute;background:#fff;border-radius:14px;padding:10px 14px;
+  font-size:12px;color:var(--texte2);box-shadow:0 12px 32px rgba(11,94,58,.18);
+  border:1px solid var(--border);animation:floatCard 4s ease-in-out infinite}
+.land-float-card strong{color:var(--vert)}
+.land-float-1{top:18%;left:-30px;animation-delay:0s}
+.land-float-2{bottom:14%;right:-20px;animation-delay:1.2s}
+@keyframes floatCard{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* Sections génériques */
+.land-section{padding:80px 0}
+.land-section-alt{background:var(--vert-p)}
+.land-section h2{font-size:32px;font-weight:800;letter-spacing:-.01em;margin-bottom:40px;line-height:1.25}
+
+.land-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.land-feature{background:#fff;border:1px solid var(--border);border-radius:18px;padding:28px}
+.land-feature-ico{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;
+  justify-content:center;font-size:22px;margin-bottom:18px}
+.land-feature h3{font-size:17px;font-weight:700;margin-bottom:8px}
+.land-feature p{font-size:14px;color:var(--texte3);line-height:1.6}
+
+.land-cats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.land-cat-pill{background:#fff;border:1px solid var(--border);border-radius:14px;
+  padding:16px 18px;font-size:14px;font-weight:600;color:var(--texte2);transition:all .15s}
+.land-cat-pill:hover{border-color:var(--vert);background:var(--vert-p);color:var(--vert);transform:translateY(-2px)}
+
+.land-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.land-step{position:relative;padding-left:54px}
+.land-step-num{position:absolute;left:0;top:0;width:38px;height:38px;border-radius:50%;
+  background:var(--vert);color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800}
+.land-step h3{font-size:17px;font-weight:700;margin-bottom:8px}
+.land-step p{font-size:14px;color:var(--texte3);line-height:1.6}
+
+.land-cta-band{background:linear-gradient(135deg,var(--vert),var(--vert-h));padding:64px 0;text-align:center}
+.land-cta-band h2{color:#fff;font-size:30px;font-weight:800;margin-bottom:28px;line-height:1.3}
+
+.land-footer{background:#0F1F17;padding:56px 0 0;color:rgba(255,255,255,.85)}
+.land-footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px;padding-bottom:40px}
+.land-footer h4{font-size:13px;font-weight:700;color:#fff;margin-bottom:14px;text-transform:uppercase;letter-spacing:.04em}
+.land-footer a{display:block;font-size:13px;color:rgba(255,255,255,.6);margin-bottom:10px;transition:color .15s}
+.land-footer a:hover{color:#6EE7B7}
+.land-footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding:20px 32px;
+  text-align:center;font-size:12px;color:rgba(255,255,255,.4)}
+
+.app-back-land{display:none;position:absolute;top:14px;left:14px;z-index:50;
+  font-size:12px;font-weight:600;color:rgba(255,255,255,.85);background:rgba(255,255,255,.15);
+  padding:6px 12px;border-radius:var(--rf)}
+
+@media(min-width:900px){
+  .app-back-land{display:block}
+}
+
+@media(max-width:980px){
+  .land-hero-inner{grid-template-columns:1fr;gap:40px}
+  .land-hero-visual{display:none}
+  .land-hero-text h1{font-size:34px}
+  .land-nav-links{display:none}
+  .land-grid-3{grid-template-columns:1fr}
+  .land-cats-grid{grid-template-columns:repeat(2,1fr)}
+  .land-steps{grid-template-columns:1fr}
+  .land-footer-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:560px){
+  .land-section-inner{padding:0 20px}
+  .land-nav-inner{padding:14px 20px}
+  .land-nav-actions .btn-g{display:none}
+  .land-hero{padding:48px 0 40px}
+  .land-hero-text h1{font-size:28px}
+  .land-cats-grid{grid-template-columns:1fr 1fr}
+  .land-footer-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 
 <!-- ============================================================ -->
+<!--  LANDING PAGE — pleine largeur, visible avant connexion       -->
+<!-- ============================================================ -->
+<div id="landing">
+  <nav class="land-nav">
+    <div class="land-nav-inner">
+      <div class="land-logo">Local<span>Opps</span></div>
+      <div class="land-nav-links">
+        <a href="#fonctionnalites">Services</a>
+        <a href="#categories">Catégories</a>
+        <a href="#comment">Comment ça marche</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="land-nav-actions">
+        <button class="btn btn-g" onclick="entrerApp('tel')">Connexion</button>
+        <button class="btn btn-v" onclick="entrerApp('tel')">Créer un compte</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="land-hero">
+    <div class="land-hero-inner">
+      <div class="land-hero-text">
+        <div class="land-badge">🇨🇮 Lancé à Abidjan — bientôt partout</div>
+        <h1>L'opportunité était<br>dans votre quartier.<br><span>Maintenant vous le savez.</span></h1>
+        <p>LocalOpps connecte les habitants d'une localité aux opportunités d'affaires, emplois, ventes urgentes, bourses d'études et alertes médicales qui se passent tout près d'eux — en temps réel, par SMS et sur l'application.</p>
+        <div class="land-hero-cta">
+          <button class="btn btn-v" style="height:52px;padding:0 28px;font-size:15px" onclick="entrerApp('tel')">Créer mon compte gratuit →</button>
+          <button class="btn btn-g" style="height:52px;padding:0 28px;font-size:15px" onclick="document.getElementById('fonctionnalites').scrollIntoView({behavior:'smooth'})">Découvrir le service</button>
+        </div>
+        <div class="land-stats">
+          <div><strong>13</strong><span>communes couvertes</span></div>
+          <div><strong>24/7</strong><span>alertes urgentes</span></div>
+          <div><strong>0 FCFA</strong><span>pour s'inscrire</span></div>
+        </div>
+      </div>
+      <div class="land-hero-visual">
+        <div class="phone-mock">
+          <div class="phone-mock-notch"></div>
+          <div class="phone-mock-screen">
+            <div style="background:var(--vert);padding:16px 16px 18px">
+              <div style="font-size:18px;font-weight:800;color:#fff">Local<span style="color:#6EE7B7">Opps</span></div>
+              <div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:6px">📍 Yopougon, Abidjan</div>
+            </div>
+            <div style="background:linear-gradient(135deg,#DC2626,#991B1B);margin:10px 12px 0;border-radius:10px;padding:10px;display:flex;gap:8px;align-items:center">
+              <span style="font-size:18px">🩸</span>
+              <div>
+                <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.8)">ALERTE URGENTE</div>
+                <div style="font-size:11px;font-weight:600;color:#fff">Don de sang O+ — Yopougon</div>
+              </div>
+            </div>
+            <div style="margin:10px 12px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px">
+              <div style="font-size:9px;background:var(--vert-p);color:var(--vert);display:inline-block;padding:2px 7px;border-radius:20px;font-weight:600;margin-bottom:5px">💼 Affaires</div>
+              <div style="font-size:12px;font-weight:700">Local commercial à reprendre</div>
+              <div style="font-size:10px;color:var(--texte3);margin-top:3px">📍 Selmer · 4.5M FCFA</div>
+            </div>
+            <div style="margin:10px 12px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px">
+              <div style="font-size:9px;background:#EFF6FF;color:#1D6FA4;display:inline-block;padding:2px 7px;border-radius:20px;font-weight:600;margin-bottom:5px">🎓 Bourse</div>
+              <div style="font-size:12px;font-weight:700">Bourse d'excellence BCEAO</div>
+              <div style="font-size:10px;color:var(--texte3);margin-top:3px">📍 National · Candidatures ouvertes</div>
+            </div>
+          </div>
+        </div>
+        <div class="land-float-card land-float-1">🩸 <strong>3</strong> donneurs ont répondu en 4 min</div>
+        <div class="land-float-card land-float-2">💼 <strong>89</strong> vues sur une annonce locale</div>
+      </div>
+    </div>
+  </header>
+
+  <section class="land-section" id="fonctionnalites">
+    <div class="land-section-inner">
+      <span class="land-kicker">Pourquoi LocalOpps</span>
+      <h2>L'information était là.<br>Vous n'y aviez juste pas accès.</h2>
+      <div class="land-grid-3">
+        <div class="land-feature">
+          <div class="land-feature-ico" style="background:var(--vert-p)">📍</div>
+          <h3>Géolocalisé par quartier</h3>
+          <p>Chaque annonce est rattachée à une commune et un quartier précis. Vous voyez d'abord ce qui se passe à 500m de chez vous.</p>
+        </div>
+        <div class="land-feature">
+          <div class="land-feature-ico" style="background:var(--rouge-p)">🚨</div>
+          <h3>Alertes vitales en temps réel</h3>
+          <p>Don de sang, urgence médicale, sécurité : une alerte part par SMS à tous les abonnés concernés en moins de 30 secondes.</p>
+        </div>
+        <div class="land-feature">
+          <div class="land-feature-ico" style="background:var(--orange-p)">📲</div>
+          <h3>Accessible à tous, même sans smartphone</h3>
+          <p>Web, application et SMS classique. Personne n'est laissé de côté, même avec un téléphone basique et peu de réseau.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="land-section land-section-alt" id="categories">
+    <div class="land-section-inner">
+      <span class="land-kicker">Tout ce qui se passe près de vous</span>
+      <h2>12 catégories. Une seule plateforme.</h2>
+      <div class="land-cats-grid">
+        <div class="land-cat-pill">💼 Opportunités d'affaires</div>
+        <div class="land-cat-pill">👔 Emploi & recrutement</div>
+        <div class="land-cat-pill">🏠 Immobilier urgent</div>
+        <div class="land-cat-pill">🔧 Services & petits métiers</div>
+        <div class="land-cat-pill">💊 Santé & don de sang</div>
+        <div class="land-cat-pill">🥬 Vivres & alimentation</div>
+        <div class="land-cat-pill">📅 Conférences & événements</div>
+        <div class="land-cat-pill">🎓 Bourses d'études</div>
+        <div class="land-cat-pill">🚗 Covoiturage local</div>
+        <div class="land-cat-pill">🤝 Entraide & solidarité</div>
+        <div class="land-cat-pill">🌾 Agriculture & terroir</div>
+        <div class="land-cat-pill">🏗️ Matériaux & construction</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="land-section" id="comment">
+    <div class="land-section-inner">
+      <span class="land-kicker">Simple et rapide</span>
+      <h2>Comment ça marche</h2>
+      <div class="land-steps">
+        <div class="land-step">
+          <div class="land-step-num">1</div>
+          <h3>Créez votre compte</h3>
+          <p>Numéro de téléphone, code reçu par SMS, votre commune. C'est gratuit et ça prend 30 secondes.</p>
+        </div>
+        <div class="land-step">
+          <div class="land-step-num">2</div>
+          <h3>Choisissez vos alertes</h3>
+          <p>Santé, emploi, affaires, sécurité — vous décidez ce que vous voulez recevoir et à quelle fréquence.</p>
+        </div>
+        <div class="land-step">
+          <div class="land-step-num">3</div>
+          <h3>Publiez ou découvrez</h3>
+          <p>Publiez vos propres annonces gratuitement, ou explorez les opportunités déjà publiées près de vous.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="land-cta-band">
+    <div class="land-section-inner">
+      <h2>Votre prochaine opportunité<br>est peut-être déjà publiée.</h2>
+      <button class="btn" style="height:52px;padding:0 32px;font-size:15px;background:#fff;color:var(--vert)" onclick="entrerApp('tel')">Rejoindre LocalOpps gratuitement</button>
+    </div>
+  </section>
+
+  <footer class="land-footer" id="contact">
+    <div class="land-section-inner land-footer-grid">
+      <div>
+        <div class="land-logo" style="color:#fff;margin-bottom:10px">Local<span>Opps</span></div>
+        <p style="color:rgba(255,255,255,.6);font-size:13px;max-width:280px">L'information locale qui change des vies. Abidjan aujourd'hui, le monde ensuite.</p>
+      </div>
+      <div>
+        <h4>Service</h4>
+        <a href="#fonctionnalites">Fonctionnalités</a>
+        <a href="#categories">Catégories</a>
+        <a href="#comment">Comment ça marche</a>
+      </div>
+      <div>
+        <h4>Compte</h4>
+        <a onclick="entrerApp('tel')" style="cursor:pointer">Se connecter</a>
+        <a onclick="entrerApp('tel')" style="cursor:pointer">Créer un compte</a>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <a href="mailto:contact@localopps.ci">contact@localopps.ci</a>
+        <a href="https://wa.me/2250000000000">WhatsApp support</a>
+        <span style="color:rgba(255,255,255,.5);font-size:13px">Abidjan, Côte d'Ivoire</span>
+      </div>
+    </div>
+    <div class="land-footer-bottom">© 2026 LocalOpps. Tous droits réservés.</div>
+  </footer>
+</div>
+
+<!-- ============================================================ -->
+<!--  APPLICATION (cadrée mobile)                                  -->
+<!-- ============================================================ -->
+<div id="app-shell" style="display:none">
+
+<!-- ============================================================ -->
 <!--  PAGE CONNEXION                                               -->
 <!-- ============================================================ -->
 <div id="pg-connexion" class="page active">
+  <button class="app-back-land" onclick="retourLanding()">← Retour au site</button>
   <div class="auth-hero">
     <div class="auth-logo">Local<span>Opps</span></div>
     <div style="font-size:13px;color:rgba(255,255,255,.8);margin-top:6px;text-align:center">
@@ -791,6 +1114,8 @@ img{display:block;max-width:100%}
     </div>
   </div>
 </div>
+
+</div><!-- /#app-shell -->
 
 <script>
 // ============================================================
@@ -1570,8 +1895,7 @@ function togglePref(cle) {
 function deconnexion() {
   if(confirm('Voulez-vous vraiment vous déconnecter ?')) {
     userData = null
-    naviguer('connexion')
-    setTimeout(()=>{ document.getElementById('nav-bas').style.display='none' }, 100)
+    retourLanding()
   }
 }
 
@@ -1650,6 +1974,27 @@ function ouvrirContact() {
 }
 function fermerOverlay(id) {
   document.getElementById(id).classList.remove('show')
+}
+
+// ============================================================
+// INIT
+// ============================================================
+// ============================================================
+// LANDING PAGE — TRANSITIONS
+// ============================================================
+function entrerApp(etape) {
+  document.getElementById('landing').style.display = 'none'
+  document.getElementById('app-shell').style.display = 'block'
+  document.body.classList.add('in-app')
+  naviguer(userData ? 'accueil' : 'connexion')
+  if (!userData) showAuthStep(etape || 'tel')
+  window.scrollTo(0,0)
+}
+function retourLanding() {
+  document.getElementById('app-shell').style.display = 'none'
+  document.getElementById('landing').style.display = 'block'
+  document.body.classList.remove('in-app')
+  window.scrollTo(0,0)
 }
 
 // ============================================================
