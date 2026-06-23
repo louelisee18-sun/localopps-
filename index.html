@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>LocalOpps — Opportunités de proximité</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --vert: #0B5E3A; --vert-c: #1A8A56; --vert-p: #E8F5EE; --vert-h: #094D30;
+  --orange: #F97316; --orange-p: #FFF0E6; --orange-d: #C85C0A;
+  --rouge: #DC2626; --rouge-p: #FEF2F2;
+  --bleu: #1D6FA4; --bleu-p: #EFF6FF;
+  --blanc: #fff; --surface: #F7FAF8; --surface2: #EEF3F0;
+  --border: #D5E5DD; --texte: #0F1F17; --texte2: #3D5247; --texte3: #6B8C7A; --pale: #9BBAA8;
+  --r: 12px; --rf: 999px; --ombre: 0 2px 12px rgba(11,94,58,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{font-size:16px;height:100%}
+body{font-family:'Sora',sans-serif;background:var(--surface);color:var(--texte);
+  max-width:430px;margin:0 auto;min-height:100vh;position:relative;overflow-x:hidden}
+a{color:inherit;text-decoration:none}button{cursor:pointer;border:none;background:none;font-family:inherit}
+input,select,textarea{font-family:inherit;outline:none}
+img{display:block;max-width:100%}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.7}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.fade-up{animation:fadeUp .25s ease both}
+
+/* Skeleton */
+.skel{background:linear-gradient(90deg,var(--surface2) 25%,var(--border) 50%,var(--surface2) 75%);
+  background-size:400px 100%;animation:shimmer 1.4s infinite linear;border-radius:6px}
+
+/* Boutons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  height:44px;padding:0 20px;border-radius:var(--rf);font-size:14px;font-weight:600;
+  transition:all .15s;white-space:nowrap;cursor:pointer}
+.btn-v{background:var(--vert);color:#fff;box-shadow:0 2px 10px rgba(11,94,58,.3)}
+.btn-v:active{background:var(--vert-h);transform:scale(.97)}
+.btn-o{background:var(--orange);color:#fff;box-shadow:0 2px 10px rgba(249,115,22,.25)}
+.btn-r{background:var(--rouge);color:#fff;box-shadow:0 2px 10px rgba(220,38,38,.25)}
+.btn-g{background:transparent;color:var(--vert);border:1.5px solid var(--border)}
+.btn-g:hover{border-color:var(--vert);background:var(--vert-p)}
+.btn-block{width:100%}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* Inputs */
+.inp{width:100%;height:48px;padding:0 14px;border:1.5px solid var(--border);
+  border-radius:var(--r);font-size:14px;color:var(--texte);background:var(--blanc);transition:border-color .15s}
+.inp:focus{border-color:var(--vert)}
+.inp::placeholder{color:var(--pale)}
+.sel{width:100%;height:48px;padding:0 36px 0 14px;border:1.5px solid var(--border);
+  border-radius:var(--r);font-size:14px;color:var(--texte);background:var(--blanc)
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236B8C7A' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;
+  -webkit-appearance:none;appearance:none;transition:border-color .15s}
+.sel:focus{border-color:var(--vert)}
+.ta{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--r);
+  font-size:14px;color:var(--texte);background:var(--blanc);resize:vertical;min-height:100px;
+  line-height:1.6;transition:border-color .15s}
+.ta:focus{border-color:var(--vert)}
+.lbl{display:block;font-size:13px;font-weight:500;color:var(--texte2);margin-bottom:6px}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;
+  border-radius:var(--rf);font-size:11px;font-weight:600}
+.b-v{background:var(--vert-p);color:var(--vert)}
+.b-o{background:var(--orange-p);color:var(--orange-d)}
+.b-r{background:var(--rouge-p);color:var(--rouge)}
+.b-b{background:var(--bleu-p);color:var(--bleu)}
+.b-g{background:var(--surface2);color:var(--texte3)}
+
+/* Cartes */
+.card{background:var(--blanc);border-radius:16px;border:1px solid var(--border);
+  box-shadow:var(--ombre);overflow:hidden;transition:box-shadow .15s,transform .1s}
+.card:active{transform:scale(.99)}
+
+/* Navigation bas */
+#nav-bas{position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;background:var(--blanc);
+  border-top:1px solid var(--border);display:flex;align-items:center;
+  padding:6px 0 20px;z-index:100}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:4px;font-size:10px;font-weight:500;color:var(--pale);cursor:pointer;transition:color .15s}
+.nav-item.actif{color:var(--vert)}
+.nav-item svg{transition:transform .15s}
+.nav-item.actif svg{transform:scale(1.1)}
+.nav-pub{flex:1;display:flex;justify-content:center}
+.nav-pub-btn{width:50px;height:50px;border-radius:50%;background:var(--vert);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px rgba(11,94,58,.4);margin-top:-20px;border:none;cursor:pointer;
+  transition:all .15s}
+.nav-pub-btn:active{transform:scale(.93)}
+
+/* Pages */
+.page{display:none;min-height:calc(100vh - 80px);padding-bottom:90px}
+.page.active{display:block}
+
+/* ============ HEADER ACCUEIL ============ */
+#hdr-accueil{background:var(--vert);padding:16px 16px 20px}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.logo{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.02em}
+.logo span{color:#6EE7B7}
+.loc{display:flex;align-items:center;gap:4px;font-size:12px;color:rgba(255,255,255,.8);margin-top:2px;cursor:pointer}
+.notif-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}
+.notif-dot{position:absolute;top:0;right:0;width:16px;height:16px;border-radius:50%;
+  background:var(--orange);border:2px solid var(--vert);
+  display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff}
+.search-box{background:rgba(255,255,255,.15);border-radius:var(--r);padding:10px 14px;
+  display:flex;align-items:center;gap:10px;cursor:pointer}
+.search-box span{font-size:14px;color:rgba(255,255,255,.7)}
+
+/* Bannière alerte */
+.alerte-banner{margin:12px 16px 0;background:linear-gradient(135deg,var(--rouge),#991B1B);
+  border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 4px 16px rgba(220,38,38,.3);cursor:pointer;animation:fadeUp .3s ease}
+.alerte-pulse{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;font-size:18px;position:relative;flex-shrink:0}
+.alerte-pulse::after{content:'';position:absolute;inset:0;border-radius:50%;
+  border:2px solid rgba(255,255,255,.5);animation:pulse 1.5s infinite}
+.alerte-tag{font-size:10px;font-weight:700;color:rgba(255,255,255,.8);letter-spacing:.06em}
+.alerte-titre{font-size:13px;font-weight:600;color:#fff}
+.alerte-sub{font-size:11px;color:rgba(255,255,255,.75);margin-top:1px}
+.alerte-cta{font-size:11px;font-weight:700;color:#fff;background:rgba(255,255,255,.2);
+  padding:4px 10px;border-radius:var(--rf);white-space:nowrap;margin-left:auto;flex-shrink:0}
+
+/* Pills catégories */
+.cats-scroll{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none}
+.cats-scroll::-webkit-scrollbar{display:none}
+.cat-pill{display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--rf);
+  font-size:13px;font-weight:500;white-space:nowrap;border:1.5px solid var(--border);
+  background:var(--blanc);color:var(--texte2);cursor:pointer;transition:all .15s;flex-shrink:0}
+.cat-pill.sel{background:var(--vert);border-color:var(--vert);color:#fff}
+
+/* Carte annonce */
+.ann-card{margin:0 16px 10px;cursor:pointer}
+.ann-card .card{padding:12px 14px}
+.ann-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.ann-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;font-size:18px;flex-shrink:0}
+.ann-title{font-size:14px;font-weight:600;color:var(--texte)}
+.ann-desc{font-size:13px;color:var(--texte2);line-height:1.5;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:10px}
+.ann-foot{display:flex;align-items:center;justify-content:space-between}
+.ann-meta{display:flex;gap:10px}
+.ann-meta span{display:flex;align-items:center;gap:3px;font-size:12px;color:var(--texte3)}
+.ann-prix{font-size:13px;font-weight:700;color:var(--vert)}
+.fav-btn{padding:4px;color:var(--pale);transition:color .15s}
+.fav-btn.on{color:var(--rouge)}
+
+/* Carte urgente */
+.urg-card{margin:0 16px 10px;cursor:pointer}
+.urg-card .card{background:var(--rouge-p);border-color:#FECACA}
+.urg-bar{background:var(--rouge);padding:6px 14px;display:flex;align-items:center;gap:6px}
+.urg-dot{width:6px;height:6px;border-radius:50%;background:#fff;animation:pulse .8s infinite}
+.urg-tag{font-size:11px;font-weight:700;color:#fff;letter-spacing:.06em}
+.urg-time{margin-left:auto;font-size:11px;color:rgba(255,255,255,.8)}
+.urg-body{padding:12px 14px}
+.urg-title{font-size:14px;font-weight:700;color:#991B1B;margin-bottom:4px}
+.urg-desc{font-size:13px;color:#B91C1C;line-height:1.5;margin-bottom:10px}
+
+/* ============ PAGE DETAIL ============ */
+.detail-header{background:var(--blanc);padding:12px 16px;display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.back-btn{width:36px;height:36px;border-radius:50%;background:var(--surface2);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.detail-img{height:200px;display:flex;align-items:center;justify-content:center;font-size:72px}
+.detail-body{padding:16px}
+.detail-titre{font-size:19px;font-weight:800;line-height:1.3;margin-bottom:10px}
+.detail-prix{font-size:28px;font-weight:800;color:var(--vert);margin-bottom:14px}
+.detail-prix span{font-size:14px;font-weight:400;color:var(--texte3);margin-left:4px}
+.detail-metas{display:flex;flex-wrap:wrap;gap:10px;padding:12px 14px;
+  background:var(--surface2);border-radius:var(--r);margin-bottom:16px}
+.detail-metas span{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--texte2)}
+.detail-desc{font-size:14px;color:var(--texte2);line-height:1.7;white-space:pre-line;margin-bottom:16px}
+.vendeur-box{display:flex;align-items:center;gap:12px;padding:12px 14px;
+  background:var(--blanc);border:1px solid var(--border);border-radius:var(--r);margin:0 16px 16px}
+.vendeur-av{width:46px;height:46px;border-radius:50%;background:var(--vert);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0}
+.detail-cta{position:sticky;bottom:0;background:var(--blanc);border-top:1px solid var(--border);
+  padding:12px 16px 28px;display:flex;gap:10px;z-index:10}
+.ico-btn{width:40px;height:40px;border-radius:10px;background:var(--surface2);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+
+/* ============ PAGE PUBLIER ============ */
+.pub-header{background:var(--blanc);padding:12px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50}
+.prog-bar{padding:14px 16px 0}
+.prog-labels{display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px}
+.prog-track{height:4px;background:var(--surface2);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--vert),var(--vert-c));
+  border-radius:2px;transition:width .4s ease}
+.etape-body{padding:20px 16px}
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cat-opt{display:flex;flex-direction:column;align-items:flex-start;gap:8px;
+  padding:14px 12px;border-radius:var(--r);border:1.5px solid var(--border);
+  background:var(--blanc);cursor:pointer;transition:all .15s;text-align:left}
+.cat-opt.sel{border-color:var(--vert);background:var(--vert-p)}
+.cat-opt span{font-size:24px}
+.cat-opt strong{font-size:12px;font-weight:600}
+.check-box{display:flex;align-items:center;gap:10px;cursor:pointer;padding:4px 0}
+.check-sq{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.check-sq.on{background:var(--vert);border-color:var(--vert)}
+.check-sq.on-r{background:var(--rouge);border-color:var(--rouge)}
+.diffusion-opt{display:flex;align-items:center;gap:14px;padding:14px 16px;
+  border-radius:var(--r);border:2px solid var(--border);background:var(--blanc);
+  cursor:pointer;transition:all .15s;text-align:left;position:relative}
+.diffusion-opt.sel{border-color:var(--vert);background:var(--vert-p)}
+.radio-circ{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.radio-circ.on{border-color:var(--vert)}
+.radio-dot{width:8px;height:8px;border-radius:50%;background:var(--vert)}
+.pub-actions{position:sticky;bottom:0;background:var(--blanc);
+  border-top:1px solid var(--border);padding:12px 16px 28px;display:flex;gap:10px;z-index:10}
+
+/* ============ PAGE EXPLORER ============ */
+.expl-search{background:var(--vert);padding:12px 16px 14px}
+.expl-inp{background:rgba(255,255,255,.15);border-radius:var(--r);padding:10px 14px;
+  display:flex;align-items:center;gap:10px}
+.expl-inp input{flex:1;background:transparent;border:none;font-size:14px;
+  color:#fff;font-family:'Sora',sans-serif}
+.expl-inp input::placeholder{color:rgba(255,255,255,.6)}
+.expl-inp input:focus{outline:none}
+.filtres-bar{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;scrollbar-width:none}
+.filtres-bar::-webkit-scrollbar{display:none}
+.filtre-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--rf);
+  border:1.5px solid var(--border);background:var(--blanc);color:var(--texte2);
+  font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;flex-shrink:0}
+.filtre-btn.on{background:var(--vert-p);border-color:var(--vert);color:var(--vert)}
+.filtre-nb{background:var(--vert);color:#fff;width:18px;height:18px;border-radius:50%;
+  font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.filtres-panel{margin:0 16px 12px;background:var(--blanc);border:1px solid var(--border);
+  border-radius:var(--r);padding:16px;animation:fadeUp .2s ease}
+.resultats-header{padding:0 16px 10px;display:flex;justify-content:space-between;align-items:center}
+
+/* ============ PAGE ALERTES ============ */
+.alertes-header{background:var(--blanc);padding:14px 16px;border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:50}
+.onglets{display:flex;background:var(--blanc);border-bottom:1px solid var(--border)}
+.onglet{flex:1;padding:12px;font-size:13px;font-weight:600;color:var(--pale);
+  border-bottom:2px solid transparent;background:transparent;cursor:pointer;transition:all .15s}
+.onglet.actif{color:var(--vert);border-bottom-color:var(--vert)}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px 4px}
+.stat-box{background:var(--blanc);border:1px solid var(--border);border-radius:var(--r);
+  padding:12px 10px;text-align:center}
+.stat-val{font-size:20px;font-weight:800}
+.stat-lbl{font-size:11px;color:var(--texte3);margin-top:3px;line-height:1.3}
+.alerte-card{margin:0 16px 10px;cursor:pointer}
+.alerte-type{font-size:11px;font-weight:700;padding:4px 10px;border-radius:var(--rf)}
+
+/* ============ PAGE PROFIL ============ */
+.profil-hero{background:linear-gradient(160deg,var(--vert),var(--vert-c));padding:24px 16px 28px}
+.profil-av{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.2);
+  border:2.5px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:700;color:#fff;flex-shrink:0}
+.profil-nom{font-size:18px;font-weight:800;color:#fff}
+.profil-sub{font-size:12px;color:rgba(255,255,255,.75);margin-top:3px}
+.profil-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.ps-box{background:rgba(255,255,255,.15);border-radius:var(--r);padding:10px;text-align:center}
+.ps-val{font-size:20px;font-weight:800;color:#fff}
+.ps-lbl{font-size:11px;color:rgba(255,255,255,.7)}
+.onglets-profil{display:flex;background:var(--blanc);border-bottom:1px solid var(--border)}
+.toggle-wrap{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 0;border-bottom:1px solid var(--border)}
+.toggle-track{width:46px;height:26px;border-radius:13px;background:var(--border);
+  position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle-track.on{background:var(--vert)}
+.toggle-track.on-r{background:var(--rouge)}
+.toggle-knob{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;
+  background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .2s}
+.toggle-track.on .toggle-knob,.toggle-track.on-r .toggle-knob{left:23px}
+.abonnement-card{border:2px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;
+  background:var(--blanc);position:relative;overflow:hidden}
+.abonnement-card.highlight{border-color:var(--vert);background:var(--vert-p)}
+
+/* ============ PAGE CONNEXION ============ */
+.auth-hero{background:linear-gradient(160deg,var(--vert),var(--vert-c));
+  padding:48px 24px 40px;display:flex;flex-direction:column;align-items:center}
+.auth-logo{font-size:36px;font-weight:900;color:#fff;letter-spacing:-.03em}
+.auth-logo span{color:#6EE7B7}
+.auth-body{flex:1;padding:32px 24px}
+.otp-inputs{display:flex;gap:10px;justify-content:center;margin-bottom:28px}
+.otp-inp{width:46px;height:54px;text-align:center;font-size:22px;font-weight:700;
+  border:2px solid var(--border);border-radius:var(--r);background:var(--blanc);
+  color:var(--vert);transition:all .15s}
+.otp-inp:focus{border-color:var(--vert);background:var(--vert-p);outline:none}
+.otp-inp.filled{border-color:var(--vert);background:var(--vert-p)}
+
+/* ============ MODAL / BOTTOM SHEET ============ */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;
+  align-items:flex-end;justify-content:center}
+.overlay.show{display:flex}
+.sheet{background:var(--blanc);border-radius:20px 20px 0 0;width:100%;max-width:430px;
+  max-height:85vh;overflow-y:auto;animation:slideUp .25s ease;padding:20px 20px 36px}
+.sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px}
+
+/* ============ SUCCÈS ============ */
+.succes-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:32px 24px;text-align:center}
+
+/* Utilitaires */
+.gap8{display:flex;flex-direction:column;gap:8px}
+.gap12{display:flex;flex-direction:column;gap:12px}
+.gap16{display:flex;flex-direction:column;gap:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.section-title{font-size:13px;font-weight:600;color:var(--texte2);text-transform:uppercase;
+  letter-spacing:.05em;margin:16px 16px 8px}
+.info-box{padding:12px 14px;border-radius:var(--r);font-size:13px;line-height:1.6}
+.info-v{background:var(--vert-p);color:var(--vert)}
+.info-o{background:#FFFBEB;color:#92400E;border:1px solid #FDE68A}
+.etoiles{display:flex;gap:2px}
+.vide-state{text-align:center;padding:60px 24px;color:var(--texte3)}
+.spinner{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;animation:spin .7s linear infinite;display:inline-block}
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!--  PAGE CONNEXION                                               -->
+<!-- ============================================================ -->
+<div id="pg-connexion" class="page active">
+  <div class="auth-hero">
+    <div class="auth-logo">Local<span>Opps</span></div>
+    <div style="font-size:13px;color:rgba(255,255,255,.8);margin-top:6px;text-align:center">
+      L'information locale qui change des vies
+    </div>
+  </div>
+  <div class="auth-body" id="auth-step-tel">
+    <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Bienvenue 👋</h2>
+    <p style="font-size:14px;color:var(--texte3);margin-bottom:28px">Entrez votre numéro de téléphone pour vous connecter ou créer un compte</p>
+    <label class="lbl">Numéro de téléphone</label>
+    <div style="position:relative;margin-bottom:24px">
+      <div style="position:absolute;left:14px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:8px;font-size:16px;color:var(--texte2);pointer-events:none">
+        🇨🇮 <span style="font-size:13px;color:var(--texte3)">+225</span>
+      </div>
+      <input class="inp" id="inp-tel" style="padding-left:72px" type="tel" inputmode="numeric" placeholder="07 XX XX XX XX" oninput="document.getElementById('btn-otp').disabled=this.value.length<8">
+    </div>
+    <button class="btn btn-v btn-block" id="btn-otp" style="height:50px;font-size:15px" disabled onclick="envoyerOTP()">
+      Recevoir le code SMS
+    </button>
+    <p style="font-size:12px;color:var(--pale);text-align:center;margin-top:14px">En continuant, vous acceptez nos conditions d'utilisation</p>
+    <div style="margin-top:24px;padding:14px;background:var(--vert-p);border-radius:var(--r);font-size:13px;color:var(--vert)">
+      💡 <strong>Démo :</strong> Entrez n'importe quel numéro et le code OTP sera <strong>123456</strong>
+    </div>
+  </div>
+
+  <div class="auth-body" id="auth-step-otp" style="display:none">
+    <button onclick="showAuthStep('tel')" style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--texte3);margin-bottom:24px">
+      ← Modifier le numéro
+    </button>
+    <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Entrez le code 🔐</h2>
+    <p style="font-size:14px;color:var(--texte3);margin-bottom:28px">Un code à 6 chiffres a été envoyé à votre numéro</p>
+    <div class="otp-inputs" id="otp-inputs">
+      <input class="otp-inp" maxlength="1" inputmode="numeric" type="text">
+      <input class="otp-inp" maxlength="1" inputmode="numeric" type="text">
+      <input class="otp-inp" maxlength="1" inputmode="numeric" type="text">
+      <input class="otp-inp" maxlength="1" inputmode="numeric" type="text">
+      <input class="otp-inp" maxlength="1" inputmode="numeric" type="text">
+      <input class="otp-inp" maxlength="1" inputmode="numeric" type="text">
+    </div>
+    <button class="btn btn-v btn-block" id="btn-verif" style="height:50px;font-size:15px" disabled onclick="verifierOTP()">Confirmer</button>
+    <p style="font-size:13px;color:var(--pale);text-align:center;margin-top:14px" id="otp-hint">Code de démo : 123456</p>
+  </div>
+
+  <div class="auth-body" id="auth-step-profil" style="display:none">
+    <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Créez votre profil 🌍</h2>
+    <p style="font-size:14px;color:var(--texte3);margin-bottom:28px">Quelques informations pour personnaliser votre expérience</p>
+    <div class="gap16">
+      <div class="grid2">
+        <div><label class="lbl">Prénom *</label><input class="inp" id="inp-prenom" placeholder="Aminata"></div>
+        <div><label class="lbl">Nom *</label><input class="inp" id="inp-nom" placeholder="Koné"></div>
+      </div>
+      <div>
+        <label class="lbl">Votre commune</label>
+        <select class="sel" id="inp-commune">
+          <option value="">Choisir votre commune</option>
+          <option>Yopougon</option><option>Cocody</option><option>Abobo</option>
+          <option>Adjamé</option><option>Plateau</option><option>Marcory</option>
+          <option>Koumassi</option><option>Treichville</option><option>Port-Bouët</option>
+        </select>
+      </div>
+      <button class="btn btn-v btn-block" style="height:50px;font-size:15px" onclick="creerProfil()">Commencer →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!--  PAGE ACCUEIL                                                 -->
+<!-- ============================================================ -->
+<div id="pg-accueil" class="page">
+  <div id="hdr-accueil">
+    <div class="hdr-top">
+      <div>
+        <div class="logo">Local<span>Opps</span></div>
+        <div class="loc" onclick="alert('Changer de localité — fonctionnalité à connecter')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span id="user-commune">Yopougon, Abidjan</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="notif-btn" onclick="naviguer('alertes')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="notif-dot">3</div>
+      </div>
+    </div>
+    <div class="search-box" onclick="naviguer('explorer')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <span>Rechercher une opportunité...</span>
+    </div>
+  </div>
+
+  <div class="alerte-banner" onclick="ouvrirAlerte()">
+    <div class="alerte-pulse">🩸</div>
+    <div style="flex:1;min-width:0">
+      <div class="alerte-tag">ALERTE URGENTE</div>
+      <div class="alerte-titre">Besoin urgent sang O+ — Clinique Sainte-Marie</div>
+      <div class="alerte-sub">Yopougon · 3 réponses reçues</div>
+    </div>
+    <div class="alerte-cta">Répondre →</div>
+  </div>
+
+  <div class="cats-scroll" id="cats-accueil">
+    <div class="cat-pill sel" data-cat="" onclick="filtrerCat(this,'')">✨ Tout</div>
+    <div class="cat-pill" data-cat="sante" onclick="filtrerCat(this,'sante')">💊 Santé</div>
+    <div class="cat-pill" data-cat="emploi" onclick="filtrerCat(this,'emploi')">👔 Emploi</div>
+    <div class="cat-pill" data-cat="affaires" onclick="filtrerCat(this,'affaires')">💼 Affaires</div>
+    <div class="cat-pill" data-cat="immobilier" onclick="filtrerCat(this,'immobilier')">🏠 Immo</div>
+    <div class="cat-pill" data-cat="services" onclick="filtrerCat(this,'services')">🔧 Services</div>
+    <div class="cat-pill" data-cat="bourse" onclick="filtrerCat(this,'bourse')">🎓 Bourses</div>
+    <div class="cat-pill" data-cat="covoiturage" onclick="filtrerCat(this,'covoiturage')">🚗 Covoit</div>
+    <div class="cat-pill" data-cat="vivres" onclick="filtrerCat(this,'vivres')">🥬 Vivres</div>
+  </div>
+
+  <div style="padding:0 16px 10px;display:flex;align-items:center;justify-content:space-between">
+    <strong style="font-size:15px" id="lbl-cat">Opportunités près de vous</strong>
+    <span style="font-size:12px;color:var(--texte3)" id="lbl-nb">6 résultats</span>
+  </div>
+
+  <div id="liste-annonces"></div>
+</div>
+
+<!-- ============================================================ -->
+<!--  PAGE DÉTAIL                                                  -->
+<!-- ============================================================ -->
+<div id="pg-detail" class="page">
+  <div class="detail-header">
+    <div class="back-btn" onclick="retour()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>
+    </div>
+    <strong style="font-size:16px;flex:1" id="detail-titre-hdr" class="truncate"></strong>
+    <div class="ico-btn" id="btn-fav-detail" onclick="toggleFavDetail()">
+      <svg id="ico-fav" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--texte3)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    </div>
+  </div>
+  <div id="detail-content"></div>
+  <div class="detail-cta">
+    <button class="btn btn-g ico-btn" onclick="alert('Signalement envoyé. Merci !')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+    </button>
+    <button class="btn btn-v btn-block" onclick="ouvrirContact()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.21 11.1a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      Contacter le publiant
+    </button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!--  PAGE EXPLORER                                                -->
+<!-- ============================================================ -->
+<div id="pg-explorer" class="page">
+  <div class="expl-search">
+    <div class="expl-inp">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="inp-recherche" placeholder="Rechercher..." oninput="rechercherAnnonces()">
+      <span id="btn-clear-search" style="color:rgba(255,255,255,.7);font-size:20px;cursor:pointer;display:none" onclick="clearSearch()">×</span>
+    </div>
+  </div>
+  <div class="filtres-bar">
+    <button class="filtre-btn" id="btn-filtres" onclick="toggleFiltres()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+      Filtres <span class="filtre-nb" id="nb-filtres" style="display:none">0</span>
+    </button>
+    <button class="cat-pill" data-cat="" onclick="filtrerExplorer(this,'')">✨ Tout</button>
+    <button class="cat-pill" data-cat="affaires" onclick="filtrerExplorer(this,'affaires')">💼 Affaires</button>
+    <button class="cat-pill" data-cat="emploi" onclick="filtrerExplorer(this,'emploi')">👔 Emploi</button>
+    <button class="cat-pill" data-cat="immobilier" onclick="filtrerExplorer(this,'immobilier')">🏠 Immo</button>
+    <button class="cat-pill" data-cat="services" onclick="filtrerExplorer(this,'services')">🔧 Services</button>
+    <button class="cat-pill" data-cat="bourse" onclick="filtrerExplorer(this,'bourse')">🎓 Bourse</button>
+    <button class="cat-pill" data-cat="vivres" onclick="filtrerExplorer(this,'vivres')">🥬 Vivres</button>
+    <button class="cat-pill" data-cat="covoiturage" onclick="filtrerExplorer(this,'covoiturage')">🚗 Covoit</button>
+  </div>
+  <div id="panel-filtres" style="display:none">
+    <div class="filtres-panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <strong style="font-size:14px">Filtres avancés</strong>
+        <button onclick="resetFiltres()" style="font-size:12px;color:var(--rouge);font-weight:500">Réinitialiser</button>
+      </div>
+      <div class="grid2">
+        <div><label class="lbl">Commune</label>
+          <select class="sel" id="fil-commune" onchange="appliquerFiltres()" style="height:40px;font-size:13px">
+            <option value="">Toutes</option>
+            <option>Yopougon</option><option>Cocody</option><option>Abobo</option>
+            <option>Adjamé</option><option>Plateau</option><option>Marcory</option>
+          </select>
+        </div>
+        <div><label class="lbl">Prix max (FCFA)</label>
+          <input class="inp" id="fil-prix" type="number" placeholder="Illimité" style="height:40px;font-size:13px" oninput="appliquerFiltres()">
+        </div>
+      </div>
+      <div class="check-box" style="margin-top:12px" onclick="toggleUrgent()">
+        <div class="check-sq" id="chk-urgent"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <span style="font-size:14px;color:var(--texte2)">Urgents uniquement 🚨</span>
+      </div>
+    </div>
+  </div>
+  <div class="resultats-header">
+    <span style="font-size:13px;font-weight:600;color:var(--texte2)" id="lbl-resultats">6 résultats</span>
+  </div>
+  <div id="liste-explorer"></div>
+</div>
+
+<!-- ============================================================ -->
+<!--  PAGE PUBLIER                                                 -->
+<!-- ============================================================ -->
+<div id="pg-publier" class="page">
+  <div class="pub-header">
+    <div class="back-btn" onclick="retour()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>
+    </div>
+    <strong style="font-size:16px">Publier une annonce</strong>
+  </div>
+  <div class="prog-bar">
+    <div class="prog-labels">
+      <span style="font-weight:600;color:var(--vert)" id="prog-label">Catégorie</span>
+      <span id="prog-step" style="color:var(--texte3)">Étape 1 / 5</span>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:20%"></div></div>
+  </div>
+
+  <div id="etape-1" class="etape-body">
+    <h2 style="font-size:17px;font-weight:700;margin-bottom:6px">Quelle est votre annonce ?</h2>
+    <p style="font-size:13px;color:var(--texte3);margin-bottom:20px">Choisissez la catégorie qui correspond le mieux</p>
+    <div class="cat-grid" id="cat-grid-pub"></div>
+  </div>
+
+  <div id="etape-2" class="etape-body" style="display:none">
+    <h2 style="font-size:17px;font-weight:700;margin-bottom:20px">Décrivez votre annonce</h2>
+    <div class="gap16">
+      <div>
+        <label class="lbl">Titre de l'annonce *</label>
+        <input class="inp" id="pub-titre" placeholder="Ex : Plombier disponible ce matin" maxlength="100">
+        <span style="font-size:11px;color:var(--pale);margin-top:4px;display:block" id="titre-count">0/100</span>
+      </div>
+      <div>
+        <label class="lbl">Description *</label>
+        <textarea class="ta" id="pub-desc" rows="5" placeholder="Décrivez votre annonce en détail..."></textarea>
+      </div>
+      <div class="grid2">
+        <div><label class="lbl">Prix (optionnel)</label><input class="inp" id="pub-prix" type="number" placeholder="0"></div>
+        <div><label class="lbl">Devise</label>
+          <select class="sel" id="pub-devise"><option>FCFA</option><option>EUR</option><option>USD</option></select>
+        </div>
+      </div>
+      <label class="check-box" onclick="toggleCheck('chk-neg')">
+        <div class="check-sq" id="chk-neg"></div>
+        <span style="font-size:14px;color:var(--texte2)">Prix négociable</span>
+      </label>
+      <label class="check-box" onclick="toggleCheck('chk-urg','r')">
+        <div class="check-sq" id="chk-urg"></div>
+        <div><span style="font-size:14px;color:var(--texte2)">Marquer comme urgent</span>
+          <span style="display:block;font-size:11px;color:var(--pale)">Apparaît en rouge en haut du fil</span>
+        </div>
+      </label>
+    </div>
+  </div>
+
+  <div id="etape-3" class="etape-body" style="display:none">
+    <h2 style="font-size:17px;font-weight:700;margin-bottom:20px">Où se trouve l'opportunité ?</h2>
+    <div class="gap16">
+      <div>
+        <label class="lbl">Commune *</label>
+        <select class="sel" id="pub-commune">
+          <option value="">Choisir une commune</option>
+          <option>Yopougon</option><option>Cocody</option><option>Abobo</option>
+          <option>Adjamé</option><option>Plateau</option><option>Marcory</option>
+          <option>Koumassi</option><option>Treichville</option><option>Port-Bouët</option>
+          <option>Yamoussoukro</option><option>Bouaké</option>
+        </select>
+      </div>
+      <div><label class="lbl">Quartier (optionnel)</label><input class="inp" id="pub-quartier" placeholder="Ex : Selmer, Zone 4..."></div>
+      <div><label class="lbl">Adresse précise (optionnel)</label><input class="inp" id="pub-adresse" placeholder="Ex : Rue des Commerces, face au marché"></div>
+      <button onclick="detecterGPS()" style="display:flex;align-items:center;gap:10px;padding:12px 14px;
+        border-radius:var(--r);border:1.5px dashed var(--vert);background:var(--vert-p);
+        color:var(--vert);font-size:14px;font-weight:500;cursor:pointer" id="btn-gps">
+        📍 Détecter ma position GPS (optionnel)
+      </button>
+    </div>
+  </div>
+
+  <div id="etape-4" class="etape-body" style="display:none">
+    <h2 style="font-size:17px;font-weight:700;margin-bottom:8px">Comment vous joindre ?</h2>
+    <p style="font-size:13px;color:var(--texte3);margin-bottom:20px">Au moins un moyen de contact requis</p>
+    <div class="gap16">
+      <div>
+        <label class="lbl">Numéro WhatsApp *</label>
+        <div style="position:relative">
+          <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px">💬</span>
+          <input class="inp" id="pub-wa" style="padding-left:42px" placeholder="+225 07 XX XX XX XX">
+        </div>
+      </div>
+      <div>
+        <label class="lbl">Téléphone (optionnel)</label>
+        <div style="position:relative">
+          <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px">📞</span>
+          <input class="inp" id="pub-tel" style="padding-left:42px" placeholder="+225 07 XX XX XX XX">
+        </div>
+      </div>
+      <div class="info-box info-o">🔒 Vos coordonnées ne sont visibles que des utilisateurs qui cliquent sur "Contacter".</div>
+    </div>
+  </div>
+
+  <div id="etape-5" class="etape-body" style="display:none">
+    <h2 style="font-size:17px;font-weight:700;margin-bottom:8px">Portée de votre annonce</h2>
+    <p style="font-size:13px;color:var(--texte3);margin-bottom:16px">Choisissez combien de personnes recevront une notification</p>
+    <div class="gap12" id="diffusion-opts"></div>
+    <div id="recapitulatif" style="margin-top:16px;padding:14px 16px;background:var(--vert-p);
+      border-radius:var(--r);border:1px solid var(--border)"></div>
+  </div>
+
+  <div class="pub-actions" id="pub-actions">
+    <button class="btn btn-g" id="btn-retour-pub" style="display:none;flex:0 0 auto;padding:0 20px" onclick="etapePub(-1)">← Retour</button>
+    <button class="btn btn-v btn-block" id="btn-suivant-pub" onclick="etapePub(1)">Continuer →</button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!--  PAGE ALERTES                                                 -->
+<!-- ============================================================ -->
+<div id="pg-alertes" class="page">
+  <div class="alertes-header">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div><h1 style="font-size:17px;font-weight:700">Alertes urgentes</h1>
+        <p style="font-size:12px;color:var(--texte3)">Abidjan — en temps réel</p>
+      </div>
+    </div>
+  </div>
+  <div class="onglets">
+    <button class="onglet actif" id="ogl-actives" onclick="switchOngletAlerte('actives')">🔴 En cours</button>
+    <button class="onglet" id="ogl-passees" onclick="switchOngletAlerte('passees')">⬜ Résolues</button>
+  </div>
+  <div style="padding:14px 16px">
+    <button class="btn btn-r btn-block" style="height:50px;font-size:15px;gap:8px" onclick="ouvrirDeclencherAlerte()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Déclencher une alerte urgente
+    </button>
+    <p style="font-size:12px;color:var(--pale);margin-top:6px;text-align:center">Pour don de sang, urgence médicale ou alerte de sécurité</p>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-box"><div class="stat-val" style="color:var(--rouge)">3</div><div class="stat-lbl">Alertes actives</div></div>
+    <div class="stat-box"><div class="stat-val" style="color:var(--vert)">4 880</div><div class="stat-lbl">SMS envoyés</div></div>
+    <div class="stat-box"><div class="stat-val" style="color:var(--orange)">3</div><div class="stat-lbl">Réponses</div></div>
+  </div>
+  <div class="section-title">Alertes en cours dans votre zone</div>
+  <div id="liste-alertes"></div>
+</div>
+
+<!-- ============================================================ -->
+<!--  PAGE PROFIL                                                  -->
+<!-- ============================================================ -->
+<div id="pg-profil" class="page">
+  <div class="profil-hero">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="profil-av" id="profil-av">AK</div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="profil-nom" id="profil-nom">Aminata Koné</div>
+            <span style="background:rgba(255,255,255,.25);padding:2px 8px;border-radius:var(--rf);font-size:11px;font-weight:700;color:#fff">✓ Vérifié</span>
+          </div>
+          <div class="profil-sub" id="profil-sub">Yopougon · Membre depuis 1 jour</div>
+          <div style="display:flex;align-items:center;gap:4px;margin-top:4px">
+            <span style="color:#FBBF24;font-size:13px">★★★★★</span>
+            <span style="font-size:12px;color:rgba(255,255,255,.7)">4.8 (12 avis)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="profil-stats">
+      <div class="ps-box"><div class="ps-val">5</div><div class="ps-lbl">Annonces</div></div>
+      <div class="ps-box"><div class="ps-val">12</div><div class="ps-lbl">Avis</div></div>
+      <div class="ps-box"><div class="ps-val">4.8</div><div class="ps-lbl">Note</div></div>
+    </div>
+  </div>
+  <div class="onglets-profil">
+    <button class="onglet actif" id="ogl-mes-ann" onclick="switchOngletProfil('annonces')">Mes annonces</button>
+    <button class="onglet" id="ogl-alertes-pref" onclick="switchOngletProfil('alertes')">Alertes</button>
+    <button class="onglet" id="ogl-abo" onclick="switchOngletProfil('abonnement')">Abonnement</button>
+  </div>
+  <div style="padding:16px" id="profil-content"></div>
+  <div style="padding:0 16px 32px">
+    <button style="width:100%;padding:13px;border-radius:var(--rf);border:1.5px solid #FECACA;
+      color:var(--rouge);font-size:14px;font-weight:600;background:transparent;cursor:pointer"
+      onclick="deconnexion()">Se déconnecter</button>
+  </div>
+</div>
+
+<!-- Navigation bas -->
+<nav id="nav-bas">
+  <div class="nav-item actif" id="nav-accueil" onclick="naviguer('accueil')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+    Accueil
+  </div>
+  <div class="nav-item" id="nav-explorer" onclick="naviguer('explorer')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    Explorer
+  </div>
+  <div class="nav-pub">
+    <button class="nav-pub-btn" onclick="naviguer('publier')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+  </div>
+  <div class="nav-item" id="nav-alertes" onclick="naviguer('alertes')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    Alertes
+  </div>
+  <div class="nav-item" id="nav-profil" onclick="naviguer('profil')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profil
+  </div>
+</nav>
+
+<!-- ============ BOTTOM SHEETS / MODALS ============ -->
+<div class="overlay" id="overlay-contact" onclick="fermerOverlay('overlay-contact')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;text-align:center">Contacter le publiant</h3>
+    <a id="wa-link" href="#" target="_blank" style="display:flex;align-items:center;gap:14px;
+      background:#25D366;border-radius:var(--r);padding:14px 16px;margin-bottom:10px;color:#fff;text-decoration:none">
+      <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.2);
+        display:flex;align-items:center;justify-content:center;font-size:22px">💬</div>
+      <div><div style="font-weight:700;font-size:14px">Écrire sur WhatsApp</div>
+        <div style="font-size:12px;opacity:.85" id="wa-num">+225 07 08 09 10 11</div>
+      </div>
+    </a>
+    <a id="tel-link" href="#" style="display:flex;align-items:center;gap:14px;
+      background:var(--vert-p);border:1.5px solid var(--border);border-radius:var(--r);
+      padding:14px 16px;color:var(--texte);text-decoration:none;margin-bottom:14px">
+      <div style="width:40px;height:40px;border-radius:50%;background:var(--vert);color:#fff;
+        display:flex;align-items:center;justify-content:center">📞</div>
+      <div><div style="font-weight:700;font-size:14px;color:var(--vert)">Appeler</div>
+        <div style="font-size:12px;color:var(--texte3)" id="tel-num">+225 07 08 09 10 11</div>
+      </div>
+    </a>
+    <button class="btn btn-g btn-block" onclick="fermerOverlay('overlay-contact')">Fermer</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-alerte" onclick="fermerOverlay('overlay-alerte')">
+  <div class="sheet" onclick="event.stopPropagation()" id="sheet-alerte-content"></div>
+</div>
+
+<div class="overlay" id="overlay-declencher" onclick="fermerOverlay('overlay-declencher')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:6px">Déclencher une alerte</h3>
+    <p style="font-size:13px;color:var(--texte3);margin-bottom:16px">Pour urgences médicales, don de sang ou alertes de sécurité</p>
+    <div class="gap12">
+      <div>
+        <label class="lbl">Type d'alerte</label>
+        <select class="sel" id="al-type">
+          <option value="sang">🩸 Don de sang</option>
+          <option value="sante">💊 Urgence médicale</option>
+          <option value="securite">🚔 Alerte sécurité</option>
+          <option value="autre">📢 Information urgente</option>
+        </select>
+      </div>
+      <div><label class="lbl">Message *</label><textarea class="ta" id="al-message" rows="3" placeholder="Décrivez l'urgence..."></textarea></div>
+      <div><label class="lbl">Lieu *</label><input class="inp" id="al-lieu" placeholder="Ex : Clinique Sainte-Marie, Yopougon Selmer"></div>
+      <div><label class="lbl">Contact d'urgence *</label><input class="inp" id="al-contact" placeholder="+225 07 XX XX XX XX"></div>
+      <button class="btn btn-r btn-block" style="height:50px;font-size:15px" onclick="envoyerAlerte()">
+        🚨 Envoyer l'alerte maintenant
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DONNÉES
+// ============================================================
+const CATS = {
+  affaires:    {label:'Affaires',    emoji:'💼',bg:'#E8F5EE',color:'#0B5E3A'},
+  emploi:      {label:'Emploi',      emoji:'👔',bg:'#EFF6FF',color:'#1D6FA4'},
+  immobilier:  {label:'Immo urgent', emoji:'🏠',bg:'#FFF0E6',color:'#C85C0A'},
+  services:    {label:'Services',    emoji:'🔧',bg:'#F0FDF4',color:'#166534'},
+  sante:       {label:'Santé',       emoji:'💊',bg:'#FEF2F2',color:'#DC2626'},
+  vivres:      {label:'Vivres',      emoji:'🥬',bg:'#F0FDF4',color:'#15803D'},
+  conference:  {label:'Conférence',  emoji:'📅',bg:'#F5F3FF',color:'#6D28D9'},
+  bourse:      {label:'Bourse',      emoji:'🎓',bg:'#FFFBEB',color:'#92400E'},
+  covoiturage: {label:'Covoiturage', emoji:'🚗',bg:'#EFF6FF',color:'#1E40AF'},
+  entraide:    {label:'Entraide',    emoji:'🤝',bg:'#FFF7ED',color:'#C2410C'},
+  agriculture: {label:'Agriculture', emoji:'🌾',bg:'#ECFDF5',color:'#065F46'},
+  materiau:    {label:'Matériaux',   emoji:'🏗️',bg:'#F9FAFB',color:'#374151'},
+}
+
+const ANNONCES = [
+  {id:'a1',titre:'Don de sang O+ recherché d\'urgence',desc:'Clinique Sainte-Marie de Yopougon — 2 poches nécessaires immédiatement. Patient en salle d\'opération.',
+    cat:'sante',commune:'Yopougon',quartier:'Selmer',prix:null,devise:'FCFA',negociable:false,urgent:true,sponsorise:false,
+    vues:47,contacts:12,wa:'+2250708091011',tel:'+2250708091011',auteur:'Clinique SM',
+    desc_long:'Urgence absolue. Patient adulte en attente de transfusion.\n\nGroupe sanguin requis : O+\nQuantité : 2 poches minimum\nRémunération possible selon conditions.\n\nPrésentez-vous directement avec votre carte d\'identité.',
+    created:Date.now()-4*60000},
+  {id:'a2',titre:'Local commercial à reprendre — boulangerie équipée',desc:'Matériel neuf inclus : four industriel, pétrin, vitrines réfrigérées. Bail de 3 ans transférable.',
+    cat:'affaires',commune:'Yopougon',quartier:'Selmer',prix:4500000,devise:'FCFA',negociable:true,urgent:false,sponsorise:true,
+    vues:89,contacts:7,wa:'+2250712345678',tel:'+2250712345678',auteur:'Kouassi D.',
+    desc_long:'Local de 45m² entièrement équipé :\n\n• Four industriel 3 étages (neuf, 2023)\n• Pétrin professionnel 20kg\n• 2 vitrines réfrigérées\n• Chambre froide\n\nBail de 3 ans transférable, loyer 120 000 FCFA/mois inclus.\n\nDépart définitif en France. Affaire à saisir.',
+    created:Date.now()-2*3600000},
+  {id:'a3',titre:'Plombier disponible ce matin — intervention rapide',desc:'Intervention rapide, devis gratuit sur place. Yopougon et communes environnantes. 10 ans d\'expérience.',
+    cat:'services',commune:'Yopougon',quartier:null,prix:null,devise:'FCFA',negociable:true,urgent:false,sponsorise:false,
+    vues:31,contacts:4,wa:'+2250756789012',tel:'+2250756789012',auteur:'Traoré M.',
+    desc_long:'Plombier professionnel avec 10 ans d\'expérience à Abidjan.\n\nInterventions :\n• Fuites et robinetteries\n• Débouchages\n• Installation sanitaire\n• Chauffe-eau\n\nDevis gratuit et rapide. Disponible 7j/7.',
+    created:Date.now()-30*60000},
+  {id:'a4',titre:'Studio meublé — départ urgent 4,5M FCFA',desc:'Normalement estimé à 7M FCFA. Départ définitif en France. Négociable pour paiement rapide.',
+    cat:'immobilier',commune:'Yopougon',quartier:'Wassakara',prix:4500000,devise:'FCFA',negociable:true,urgent:false,sponsorise:false,
+    vues:156,contacts:23,wa:'+2250767890123',tel:'+2250767890123',auteur:'Adama K.',
+    desc_long:'Studio meublé de 35m² en excellent état.\n\nInclus :\n• Lit double avec matelas neuf\n• Armoire 3 portes\n• Cuisine équipée\n• Climatiseur\n• Salle de bain\n\nSitué à 200m du marché Wassakara. Calme et sécurisé.\n\nRaison vente : départ définitif France dans 2 semaines.',
+    created:Date.now()-1*3600000},
+  {id:'a5',titre:'Bourse d\'excellence BCEAO 2025 — candidatures ouvertes',desc:'La BCEAO ouvre ses bourses pour études en économie, finance et statistiques. Niveau Master requis.',
+    cat:'bourse',commune:'Plateau',quartier:null,prix:null,devise:'FCFA',negociable:false,urgent:false,sponsorise:false,
+    vues:312,contacts:58,wa:'+2252722334455',tel:'+2252722334455',auteur:'BCEAO CI',
+    desc_long:'La BCEAO lance son programme de bourses d\'excellence 2025.\n\nConditions :\n• Nationalité d\'un pays membre de l\'UMOA\n• Diplôme Licence ou Master\n• Domaines : économie, finance, statistiques, informatique\n• Age max : 30 ans\n\nDossiers à déposer avant le 31 mars 2025.\n\nContact : bourses@bceao.int',
+    created:Date.now()-5*3600000},
+  {id:'a6',titre:'Place disponible Yopougon → Plateau — départ 7h30',desc:'2 places disponibles chaque matin à 7h30 depuis Yopougon Kouté. 500 FCFA/trajet.',
+    cat:'covoiturage',commune:'Yopougon',quartier:'Kouté',prix:500,devise:'FCFA',negociable:false,urgent:false,sponsorise:false,
+    vues:44,contacts:6,wa:'+2250778901234',tel:'+2250778901234',auteur:'Brou T.',
+    desc_long:'Je fais le trajet Yopougon Kouté → Plateau chaque matin, du lundi au vendredi.\n\nDépart : 7h30 pile (à la cité Kouté, près du commissariat)\nArrivée : vers 8h15-8h30 selon trafic\n\n2 places disponibles.\nTarif : 500 FCFA/trajet ou 9 000 FCFA/mois.\n\nVéhicule climatisé, conduite prudente.',
+    created:Date.now()-45*60000},
+]
+
+const ALERTES_DATA = [
+  {id:'al1',type:'sang',gs:'O+',titre:'Besoin urgent sang O+ — Clinique Sainte-Marie',
+    message:'Patient en salle d\'opération. 2 poches nécessaires immédiatement.',
+    lieu:'Clinique Sainte-Marie, Yopougon Selmer',contact:'+225 07 08 09 10 11',
+    commune:'Yopougon',sms:1247,reponses:3,statut:'actif',created:Date.now()-4*60000},
+  {id:'al2',type:'sante',titre:'Pharmacie de garde ce soir — Cocody Angré',
+    message:'Pharmacie Santé Plus assure la garde de 22h à 6h. Médicaments courants disponibles.',
+    lieu:'Pharmacie Santé Plus, Angré 8e tranche',contact:'+225 27 22 33 44 55',
+    commune:'Cocody',sms:432,reponses:0,statut:'actif',created:Date.now()-2*3600000},
+  {id:'al3',type:'autre',titre:'Route barrée — inondation Abobo',
+    message:'L\'axe Abobo-Baoulé vers Abobo-Doumé est impraticable. Prévoir un itinéraire alternatif.',
+    lieu:'Abobo-Doumé, carrefour principal',contact:'+225 07 11 22 33 44',
+    commune:'Abobo',sms:3201,reponses:0,statut:'actif',created:Date.now()-45*60000},
+]
+
+const ABONNEMENTS = [
+  {id:'gratuit',nom:'Gratuit',prix:0,features:['3 annonces/mois','Alertes de base']},
+  {id:'starter',nom:'Starter',prix:2500,features:['10 annonces/mois','Alertes prioritaires','Badge membre']},
+  {id:'pro',nom:'Pro',prix:5000,features:['Illimité','Diffusion élargie','Statistiques','Badge Pro'],highlight:true},
+  {id:'entreprise',nom:'Entreprise',prix:15000,features:['Tout Pro','SMS dédié','Support prioritaire']},
+]
+
+const DIFFUSIONS = [
+  {id:'gratuit',label:'Abonnés LocalOpps',desc:'Membres de votre commune',portee:'~500 personnes',prix:0},
+  {id:'elargi',label:'SMS zone élargie',desc:'Tous les habitants de la commune',portee:'~5 000 personnes',prix:2500,highlight:true},
+  {id:'ville',label:'SMS toute la ville',desc:'Tout Abidjan',portee:'~50 000 personnes',prix:7500},
+]
+
+// ============================================================
+// ÉTAT
+// ============================================================
+let pageActuelle = 'connexion'
+let pageRetour = 'accueil'
+let catActive = ''
+let catExplorer = ''
+let filtresActifs = {commune:'',prix:'',urgent:false}
+let filtresPanelOuvert = false
+let etapePubActuelle = 1
+let catPubSelectee = ''
+let checkNeg = false, checkUrg = false
+let diffusionSel = 'gratuit'
+let favoriIds = new Set()
+let favDetailOn = false
+let annonceDetailId = null
+let ongletAlerte = 'actives'
+let ongletProfil = 'annonces'
+let prefAlertes = {sante:true,emploi:true,affaires:false,urgences:true,donneur:true}
+let userData = null
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function naviguer(page) {
+  if(page === pageActuelle) return
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
+  document.getElementById('pg-'+page).classList.add('active')
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('actif'))
+  const ni = document.getElementById('nav-'+page)
+  if(ni) ni.classList.add('actif')
+  document.getElementById('nav-bas').style.display = ['connexion','detail'].includes(page)?'none':'flex'
+  pageActuelle = page
+  window.scrollTo(0,0)
+}
+
+function retour() {
+  naviguer(pageRetour)
+}
+
+function ouvrirDetail(id) {
+  const a = ANNONCES.find(x=>x.id===id)
+  if(!a) return
+  pageRetour = pageActuelle
+  annonceDetailId = id
+  favDetailOn = favoriIds.has(id)
+  const ico = document.getElementById('ico-fav')
+  ico.style.stroke = favDetailOn ? '#DC2626' : 'var(--texte3)'
+  ico.style.fill = favDetailOn ? '#DC2626' : 'none'
+  document.getElementById('detail-titre-hdr').textContent = a.titre
+  const cat = CATS[a.cat]||CATS.affaires
+  document.getElementById('detail-content').innerHTML = `
+    <div class="detail-img" style="background:${cat.bg}">${cat.emoji}</div>
+    <div class="detail-body">
+      <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+        <span class="badge" style="background:${cat.bg};color:${cat.color}">${cat.emoji} ${cat.label}</span>
+        ${a.sponsorise?'<span class="badge b-o">⭐ Sponsorisé</span>':''}
+        ${a.negociable?'<span class="badge b-v">Prix négociable</span>':''}
+      </div>
+      <h1 class="detail-titre">${a.titre}</h1>
+      ${a.prix?`<div class="detail-prix">${formaterPrix(a.prix)}<span>${a.devise}</span></div>`:''}
+      <div class="detail-metas">
+        <span>📍 ${a.quartier||a.commune}</span>
+        <span>🕐 ${tempsRelatif(a.created)}</span>
+        <span>👁 ${a.vues} vues</span>
+      </div>
+      <h2 style="font-size:15px;font-weight:700;margin-bottom:8px">Description</h2>
+      <p class="detail-desc">${a.desc_long}</p>
+    </div>
+    <div class="vendeur-box">
+      <div class="vendeur-av">${a.auteur.split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:14px;font-weight:600">${a.auteur}</span>
+          <span style="width:18px;height:18px;border-radius:50%;background:var(--vert);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:10px">✓</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;margin-top:2px">
+          <span style="color:#F59E0B;font-size:12px">★★★★★</span>
+          <span style="font-size:12px;color:var(--texte3)">4.8 (8 avis)</span>
+        </div>
+      </div>
+    </div>
+  `
+  naviguer('detail')
+}
+
+// ============================================================
+// ACCUEIL — LISTE
+// ============================================================
+function tempsRelatif(ts) {
+  const d = Date.now()-ts, m=Math.floor(d/60000), h=Math.floor(d/3600000), j=Math.floor(d/86400000)
+  if(m<1) return 'À l\'instant'
+  if(m<60) return m+'min'
+  if(h<24) return h+'h'
+  return j+'j'
+}
+function formaterPrix(p) {
+  if(!p) return ''
+  if(p>=1000000) return (p/1000000).toFixed(1)+'M'
+  if(p>=1000) return Math.round(p/1000)+'k'
+  return p.toLocaleString('fr-FR')
+}
+
+function rendreCarte(a) {
+  const cat = CATS[a.cat]||CATS.affaires
+  const fav = favoriIds.has(a.id)
+  if(a.urgent) return `
+    <div class="urg-card fade-up" onclick="ouvrirDetail('${a.id}')">
+      <div class="card">
+        <div class="urg-bar"><div class="urg-dot"></div><span class="urg-tag">URGENT</span><span class="urg-time">${tempsRelatif(a.created)}</span></div>
+        <div class="urg-body">
+          <div class="urg-title">${a.titre}</div>
+          <div class="urg-desc">${a.desc}</div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:12px;color:#B91C1C;display:flex;align-items:center;gap:3px">📍 ${a.quartier||a.commune}</span>
+            <span style="font-size:12px;font-weight:700;color:var(--rouge);padding:3px 10px;background:#fff;border-radius:20px;border:1px solid #FECACA">Je peux aider →</span>
+          </div>
+        </div>
+      </div>
+    </div>`
+  return `
+    <div class="ann-card fade-up" onclick="ouvrirDetail('${a.id}')">
+      <div class="card" style="padding:12px 14px">
+        <div class="ann-head">
+          <div class="ann-ico" style="background:${cat.bg}">${cat.emoji}</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;gap:6px;margin-bottom:4px;flex-wrap:wrap">
+              <span class="badge" style="background:${cat.bg};color:${cat.color}">${cat.label}</span>
+              ${a.sponsorise?'<span class="badge b-o">Sponsorisé</span>':''}
+            </div>
+            <div class="ann-title truncate">${a.titre}</div>
+          </div>
+          <button class="fav-btn ${fav?'on':''}" onclick="event.stopPropagation();toggleFav('${a.id}',this)">${fav?'❤️':'🤍'}</button>
+        </div>
+        <div class="ann-desc">${a.desc}</div>
+        <div class="ann-foot">
+          <div class="ann-meta">
+            <span>📍 ${a.quartier||a.commune}</span>
+            <span>🕐 ${tempsRelatif(a.created)}</span>
+          </div>
+          ${a.prix?`<div class="ann-prix">${formaterPrix(a.prix)} <span style="font-size:11px;font-weight:400;color:var(--texte3)">${a.devise}</span></div>`:''}
+        </div>
+      </div>
+    </div>`
+}
+
+function rendreListeAnnonces(container, annonces) {
+  const el = document.getElementById(container)
+  if(!el) return
+  if(!annonces.length) {
+    el.innerHTML=`<div class="vide-state"><div style="font-size:48px;margin-bottom:12px">🔍</div>
+      <div style="font-size:16px;font-weight:600;color:var(--texte2);margin-bottom:6px">Aucun résultat</div>
+      <div style="font-size:13px">Essayez d'autres filtres</div></div>`
+    return
+  }
+  el.innerHTML = annonces.map(rendreCarte).join('')
+}
+
+function filtrerCat(el, cat) {
+  catActive = cat
+  document.querySelectorAll('#cats-accueil .cat-pill').forEach(p=>p.classList.remove('sel'))
+  el.classList.add('sel')
+  const filtrees = cat ? ANNONCES.filter(a=>a.cat===cat) : ANNONCES
+  document.getElementById('lbl-cat').textContent = cat ? (CATS[cat]?.label||cat)+' près de vous' : 'Opportunités près de vous'
+  document.getElementById('lbl-nb').textContent = filtrees.length+' résultat'+(filtrees.length!==1?'s':'')
+  rendreListeAnnonces('liste-annonces', filtrees)
+}
+
+function toggleFav(id, btn) {
+  if(favoriIds.has(id)) { favoriIds.delete(id); btn.classList.remove('on'); btn.textContent='🤍' }
+  else { favoriIds.add(id); btn.classList.add('on'); btn.textContent='❤️' }
+}
+function toggleFavDetail() {
+  favDetailOn = !favDetailOn
+  const ico = document.getElementById('ico-fav')
+  ico.style.stroke = favDetailOn ? '#DC2626' : 'var(--texte3)'
+  ico.style.fill = favDetailOn ? '#DC2626' : 'none'
+  if(annonceDetailId) favDetailOn ? favoriIds.add(annonceDetailId) : favoriIds.delete(annonceDetailId)
+}
+
+// ============================================================
+// EXPLORER
+// ============================================================
+function filtrerExplorer(el, cat) {
+  catExplorer = cat
+  document.querySelectorAll('#pg-explorer .cat-pill').forEach(p=>p.classList.remove('sel'))
+  el.classList.add('sel')
+  appliquerFiltres()
+}
+function toggleFiltres() {
+  filtresPanelOuvert = !filtresPanelOuvert
+  document.getElementById('panel-filtres').style.display = filtresPanelOuvert?'block':'none'
+  document.getElementById('btn-filtres').classList.toggle('on', filtresPanelOuvert)
+}
+let urgentActif = false
+function toggleUrgent() {
+  urgentActif = !urgentActif
+  const el = document.getElementById('chk-urgent')
+  el.classList.toggle('on', urgentActif)
+  appliquerFiltres()
+}
+function resetFiltres() {
+  catExplorer=''; urgentActif=false
+  document.getElementById('fil-commune').value=''
+  document.getElementById('fil-prix').value=''
+  document.getElementById('chk-urgent').classList.remove('on')
+  document.querySelectorAll('#pg-explorer .cat-pill').forEach(p=>p.classList.remove('sel'))
+  document.querySelector('#pg-explorer .cat-pill[data-cat=""]').classList.add('sel')
+  appliquerFiltres()
+  document.getElementById('nb-filtres').style.display='none'
+}
+let rechTimer
+function rechercherAnnonces() {
+  clearTimeout(rechTimer)
+  rechTimer = setTimeout(appliquerFiltres, 350)
+  const v = document.getElementById('inp-recherche').value
+  document.getElementById('btn-clear-search').style.display = v?'block':'none'
+}
+function clearSearch() {
+  document.getElementById('inp-recherche').value=''
+  document.getElementById('btn-clear-search').style.display='none'
+  appliquerFiltres()
+}
+function appliquerFiltres() {
+  const q = (document.getElementById('inp-recherche')?.value||'').toLowerCase()
+  const commune = document.getElementById('fil-commune')?.value||''
+  const prixMax = document.getElementById('fil-prix')?.value
+  let r = [...ANNONCES]
+  if(q) r = r.filter(a=>a.titre.toLowerCase().includes(q)||a.desc.toLowerCase().includes(q))
+  if(catExplorer) r = r.filter(a=>a.cat===catExplorer)
+  if(commune) r = r.filter(a=>a.commune===commune)
+  if(urgentActif) r = r.filter(a=>a.urgent)
+  if(prixMax) r = r.filter(a=>!a.prix||a.prix<=Number(prixMax))
+  document.getElementById('lbl-resultats').textContent = r.length+' résultat'+(r.length!==1?'s':'')
+  const nb = [catExplorer,commune,urgentActif,prixMax].filter(Boolean).length
+  const nbEl = document.getElementById('nb-filtres')
+  nbEl.style.display = nb?'flex':'none'
+  nbEl.textContent = nb
+  rendreListeAnnonces('liste-explorer', r)
+}
+
+// ============================================================
+// PUBLIER — MULTI-ÉTAPES
+// ============================================================
+const ETAPES_LABELS = ['Catégorie','Contenu','Localisation','Contact','Diffusion']
+function initPublier() {
+  // Grille catégories
+  const g = document.getElementById('cat-grid-pub')
+  g.innerHTML = Object.entries(CATS).map(([k,c])=>`
+    <div class="cat-opt ${catPubSelectee===k?'sel':''}" onclick="selCatPub('${k}',this)">
+      <span>${c.emoji}</span><strong style="color:${catPubSelectee===k?'var(--vert)':'var(--texte2)'}">${c.label}</strong>
+    </div>`).join('')
+  // Diffusions
+  const d = document.getElementById('diffusion-opts')
+  d.innerHTML = DIFFUSIONS.map(o=>`
+    <div class="diffusion-opt ${diffusionSel===o.id?'sel':''}" onclick="selDiffusion('${o.id}',this)" style="position:relative">
+      ${o.highlight?'<div style="position:absolute;top:0;right:0;background:var(--vert);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:0 var(--r) 0 8px">RECOMMANDÉ</div>':''}
+      <div class="radio-circ ${diffusionSel===o.id?'on':''}"><div class="radio-dot" style="display:${diffusionSel===o.id?'block':'none'}"></div></div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:700;color:${diffusionSel===o.id?'var(--vert)':'var(--texte)'}">${o.label}</div>
+        <div style="font-size:12px;color:var(--texte3);margin-top:2px">${o.desc}</div>
+        <div style="font-size:12px;font-weight:600;color:var(--vert-c);margin-top:4px">📣 ${o.portee}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <span style="font-size:14px;font-weight:700;color:${o.prix?'var(--orange-d)':'var(--vert)'}">${o.prix?o.prix.toLocaleString('fr-FR')+' FCFA':'Gratuit'}</span>
+      </div>
+    </div>`).join('')
+  mettreAJourRecap()
+  // Titre counter
+  const ti = document.getElementById('pub-titre')
+  if(ti) ti.oninput = ()=> document.getElementById('titre-count').textContent = ti.value.length+'/100'
+}
+
+function selCatPub(cat, el) {
+  catPubSelectee = cat
+  document.querySelectorAll('.cat-opt').forEach(e=>{
+    e.classList.remove('sel')
+    e.querySelector('strong').style.color='var(--texte2)'
+  })
+  el.classList.add('sel')
+  el.querySelector('strong').style.color='var(--vert)'
+}
+function selDiffusion(id, el) {
+  diffusionSel = id
+  document.querySelectorAll('.diffusion-opt').forEach(o=>{
+    o.classList.remove('sel')
+    const rc = o.querySelector('.radio-circ')
+    const rd = o.querySelector('.radio-dot')
+    if(rc) rc.classList.remove('on')
+    if(rd) rd.style.display='none'
+    const t = o.querySelector('div>div:first-child')
+    if(t) t.style.color='var(--texte)'
+  })
+  el.classList.add('sel')
+  const rc = el.querySelector('.radio-circ')
+  const rd = el.querySelector('.radio-dot')
+  if(rc) rc.classList.add('on')
+  if(rd) rd.style.display='block'
+  mettreAJourRecap()
+}
+function mettreAJourRecap() {
+  const opt = DIFFUSIONS.find(o=>o.id===diffusionSel)
+  document.getElementById('recapitulatif').innerHTML = `
+    <div style="font-size:13px;font-weight:600;color:var(--vert);margin-bottom:6px">Récapitulatif</div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--texte2)">
+      <span>Diffusion</span><span style="font-weight:600">${opt?.label}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:15px;font-weight:700;color:var(--vert);padding-top:8px;border-top:1px solid var(--border)">
+      <span>Total</span><span>${opt?.prix?opt.prix.toLocaleString('fr-FR')+' FCFA':'Gratuit'}</span>
+    </div>`
+}
+function toggleCheck(id, type='v') {
+  const el = document.getElementById(id)
+  const isOn = el.classList.contains('on')
+  if(isOn) { el.classList.remove('on','on-r') }
+  else { el.classList.add(type==='r'?'on-r':'on') }
+  if(id==='chk-neg') checkNeg=!isOn
+  if(id==='chk-urg') checkUrg=!isOn
+}
+function peutContinuerPub() {
+  if(etapePubActuelle===1) return !!catPubSelectee
+  if(etapePubActuelle===2) return document.getElementById('pub-titre')?.value.length>=3 && document.getElementById('pub-desc')?.value.length>=10
+  if(etapePubActuelle===3) return !!document.getElementById('pub-commune')?.value
+  if(etapePubActuelle===4) return !!document.getElementById('pub-wa')?.value
+  return true
+}
+function etapePub(dir) {
+  if(dir===1 && !peutContinuerPub()) {
+    document.getElementById('btn-suivant-pub').style.background='var(--rouge)'
+    setTimeout(()=>document.getElementById('btn-suivant-pub').style.background='var(--vert)',600)
+    return
+  }
+  if(dir===1 && etapePubActuelle===5) { publierAnnonce(); return }
+  etapePubActuelle = Math.max(1,Math.min(5,etapePubActuelle+dir))
+  document.querySelectorAll('[id^="etape-"]').forEach(e=>e.style.display='none')
+  document.getElementById('etape-'+etapePubActuelle).style.display='block'
+  document.getElementById('prog-label').textContent = ETAPES_LABELS[etapePubActuelle-1]
+  document.getElementById('prog-step').textContent = 'Étape '+etapePubActuelle+' / 5'
+  document.getElementById('prog-fill').style.width = (etapePubActuelle/5*100)+'%'
+  document.getElementById('btn-retour-pub').style.display = etapePubActuelle>1?'block':'none'
+  const btn = document.getElementById('btn-suivant-pub')
+  if(etapePubActuelle===5) {
+    const opt = DIFFUSIONS.find(o=>o.id===diffusionSel)
+    btn.textContent = opt?.prix ? `Payer ${opt.prix.toLocaleString('fr-FR')} FCFA →` : '✓ Publier gratuitement'
+  } else {
+    btn.textContent = 'Continuer →'
+  }
+  window.scrollTo(0,0)
+}
+function detecterGPS() {
+  const btn = document.getElementById('btn-gps')
+  btn.textContent = '⏳ Détection en cours...'
+  navigator.geolocation?.getCurrentPosition(
+    ()=>{ btn.textContent = '✅ Position détectée avec succès' },
+    ()=>{ btn.textContent = '❌ Géolocalisation refusée (optionnel)' }
+  ) || (btn.textContent = '❌ Non supporté')
+}
+async function publierAnnonce() {
+  const btn = document.getElementById('btn-suivant-pub')
+  btn.disabled = true
+  btn.innerHTML = '<span class="spinner"></span> Publication...'
+  await new Promise(r=>setTimeout(r,1800))
+  const titre = document.getElementById('pub-titre')?.value||'Nouvelle annonce'
+  const commune = document.getElementById('pub-commune')?.value||'Abidjan'
+  ANNONCES.unshift({
+    id:'new-'+Date.now(), titre, desc:document.getElementById('pub-desc')?.value.slice(0,120)||'',
+    desc_long:document.getElementById('pub-desc')?.value||'',
+    cat:catPubSelectee||'affaires', commune, quartier:document.getElementById('pub-quartier')?.value||null,
+    prix:document.getElementById('pub-prix')?.value?Number(document.getElementById('pub-prix').value):null,
+    devise:'FCFA', negociable:checkNeg, urgent:checkUrg, sponsorise:false,
+    vues:0, contacts:0, wa:document.getElementById('pub-wa')?.value||'+225 XX XX XX XX',
+    tel:document.getElementById('pub-tel')?.value||'', auteur:userData?.prenom+' '+userData?.nom||'Moi',
+    created:Date.now()
+  })
+  rendreListeAnnonces('liste-annonces',ANNONCES)
+  rendreListeAnnonces('liste-explorer',ANNONCES)
+  // Reset
+  etapePubActuelle=1; catPubSelectee=''; checkNeg=false; checkUrg=false; diffusionSel='gratuit'
+  btn.disabled=false; btn.textContent='Continuer →'
+  document.querySelectorAll('[id^="etape-"]').forEach(e=>e.style.display='none')
+  document.getElementById('etape-1').style.display='block'
+  document.getElementById('prog-fill').style.width='20%'
+  document.getElementById('prog-label').textContent='Catégorie'
+  document.getElementById('prog-step').textContent='Étape 1 / 5'
+  document.getElementById('btn-retour-pub').style.display='none'
+  document.querySelectorAll('.cat-opt').forEach(e=>{e.classList.remove('sel');e.querySelector('strong').style.color='var(--texte2)'})
+  // Page succès
+  document.getElementById('pg-publier').innerHTML = `
+    <div class="succes-wrap">
+      <div style="width:80px;height:80px;border-radius:50%;background:var(--vert);color:#fff;
+        display:flex;align-items:center;justify-content:center;font-size:38px;margin-bottom:24px;
+        box-shadow:0 8px 28px rgba(11,94,58,.3)">✓</div>
+      <h1 style="font-size:22px;font-weight:800;margin-bottom:10px">Annonce soumise !</h1>
+      <p style="font-size:14px;color:var(--texte3);margin-bottom:32px;line-height:1.7">
+        Votre annonce est en cours de validation.<br>Elle sera publiée sous 30 minutes.
+      </p>
+      <button class="btn btn-v btn-block" style="height:50px;font-size:15px" onclick="allerAccueil()">Voir l'accueil</button>
+    </div>
+  `
+  naviguer('publier')
+}
+function allerAccueil() {
+  // Recréer la page publier
+  location.reload()
+}
+
+// ============================================================
+// ALERTES
+// ============================================================
+function switchOngletAlerte(ong) {
+  ongletAlerte = ong
+  document.getElementById('ogl-actives').classList.toggle('actif',ong==='actives')
+  document.getElementById('ogl-passees').classList.toggle('actif',ong==='passees')
+  rendreAlertes()
+}
+function rendreAlerteCard(a) {
+  const cfg = {sang:{emoji:'🩸',label:'Don de sang',bg:'#FEF2F2',color:'#DC2626'},
+    sante:{emoji:'💊',label:'Santé',bg:'#EFF6FF',color:'#1D6FA4'},
+    securite:{emoji:'🚔',label:'Sécurité',bg:'#FFFBEB',color:'#92400E'},
+    autre:{emoji:'📢',label:'Information',bg:'#F5F3FF',color:'#6D28D9'}}
+  const c = cfg[a.type]||cfg.autre
+  return `<div class="alerte-card fade-up" onclick="ouvrirAlerteDetail('${a.id}')">
+    <div class="card" style="padding:12px 14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <span class="alerte-type" style="background:${c.bg};color:${c.color}">${c.emoji} ${c.label}</span>
+        <span style="font-size:11px;color:var(--pale)">${tempsRelatif(a.created)}</span>
+      </div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">${a.titre}</div>
+      <div style="font-size:13px;color:var(--texte2);line-height:1.5;margin-bottom:10px">${a.message}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:12px;color:var(--texte3)">📍 ${a.commune}</span>
+        <div style="display:flex;gap:12px;font-size:12px;color:var(--texte3)">
+          <span>📤 ${a.sms.toLocaleString('fr-FR')} alertés</span>
+          <span>✋ ${a.reponses} réponses</span>
+        </div>
+      </div>
+    </div>
+  </div>`
+}
+function rendreAlertes() {
+  document.getElementById('liste-alertes').innerHTML = ALERTES_DATA.map(rendreAlerteCard).join('')
+}
+function ouvrirAlerteDetail(id) {
+  const a = ALERTES_DATA.find(x=>x.id===id)
+  if(!a) return
+  document.getElementById('sheet-alerte-content').innerHTML = `
+    <div class="sheet-handle"></div>
+    ${a.type==='sang'?`<div style="background:linear-gradient(135deg,var(--rouge),#991B1B);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px">
+      <span style="font-size:32px">🩸</span>
+      <div><div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.8);letter-spacing:.06em">ALERTE URGENTE</div>
+        <div style="font-size:14px;font-weight:700;color:#fff;margin-top:2px">Groupe sanguin : <span style="font-size:20px">${a.gs}</span></div>
+      </div></div>`:''}
+    <h2 style="font-size:17px;font-weight:800;margin-bottom:8px">${a.titre}</h2>
+    <p style="font-size:14px;color:var(--texte2);line-height:1.6;margin-bottom:14px">${a.message}</p>
+    <div style="background:var(--surface2);border-radius:var(--r);padding:12px 14px;margin-bottom:16px">
+      ${a.lieu?`<div style="display:flex;gap:8px;margin-bottom:8px;font-size:13px;color:var(--texte2)"><span>📍</span><span>${a.lieu}</span></div>`:''}
+      <div style="display:flex;gap:8px;font-size:13px"><span>📞</span><a href="tel:${a.contact}" style="color:var(--vert);font-weight:600">${a.contact}</a></div>
+    </div>
+    ${a.type==='sang'?`<div style="margin-bottom:16px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">Donneurs disponibles à proximité (3)</div>
+      ${['Adjoua M.','Konan T.','Yao B.'].map((n,i)=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--vert-p);color:var(--vert);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">${n.split(' ').map(w=>w[0]).join('')}</div>
+          <div><div style="font-size:13px;font-weight:600">${n}</div><div style="font-size:11px;color:var(--texte3)">O+ · ${(i*0.7+0.4).toFixed(1)} km</div></div>
+        </div>
+        <span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:${i===1?'#FFF7ED':'var(--vert-p)'};color:${i===1?'#C2410C':'var(--vert)'}">
+          ${i===1?'🚶 En route':'✅ Disponible'}
+        </span>
+      </div>`).join('')}
+    </div>`:''}
+    <button class="btn btn-r btn-block" style="height:50px;font-size:15px;margin-bottom:8px" onclick="repondreAlerte()">
+      ${a.type==='sang'?'🩸 Je peux donner mon sang':'✋ Je peux aider'}
+    </button>
+    <button class="btn btn-g btn-block" onclick="fermerOverlay('overlay-alerte')">Fermer</button>
+  `
+  document.getElementById('overlay-alerte').classList.add('show')
+}
+function ouvrirAlerte() {
+  ouvrirAlerteDetail('al1')
+}
+function repondreAlerte() {
+  const sheet = document.getElementById('sheet-alerte-content')
+  const btn = sheet.querySelector('.btn-r')
+  if(btn) {
+    btn.style.background='var(--vert)'
+    btn.textContent='✅ Réponse enregistrée ! La clinique est notifiée.'
+    btn.disabled=true
+  }
+}
+function ouvrirDeclencherAlerte() {
+  document.getElementById('overlay-declencher').classList.add('show')
+}
+async function envoyerAlerte() {
+  const msg = document.getElementById('al-message').value
+  const lieu = document.getElementById('al-lieu').value
+  const contact = document.getElementById('al-contact').value
+  if(!msg||!lieu||!contact) { alert('Veuillez remplir tous les champs requis'); return }
+  fermerOverlay('overlay-declencher')
+  const type = document.getElementById('al-type').value
+  const newAl = {
+    id:'al-new-'+Date.now(), type, titre:'Nouvelle alerte — '+lieu,
+    message:msg, lieu, contact, commune:'Votre commune',
+    sms:0, reponses:0, statut:'actif', created:Date.now()
+  }
+  ALERTES_DATA.unshift(newAl)
+  rendreAlertes()
+  setTimeout(()=>{ newAl.sms=124; rendreAlertes() }, 2000)
+}
+
+// ============================================================
+// PROFIL
+// ============================================================
+function switchOngletProfil(ong) {
+  ongletProfil = ong
+  ;['annonces','alertes','abonnement'].forEach(o=>{
+    const el = document.getElementById('ogl-'+(o==='annonces'?'mes-ann':o==='alertes'?'alertes-pref':'abo'))
+    if(el) el.classList.toggle('actif',o===ong)
+  })
+  rendreProfilContent()
+}
+
+function rendreProfilContent() {
+  const el = document.getElementById('profil-content')
+  if(ongletProfil==='annonces') {
+    const mesPub = ANNONCES.slice(0,5)
+    el.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <h2 style="font-size:15px">Mes annonces (${mesPub.length})</h2>
+        <button class="btn btn-v" style="height:34px;font-size:12px;padding:0 14px" onclick="naviguer('publier')">+ Nouvelle</button>
+      </div>
+      ${mesPub.map(a=>{
+        const cat=CATS[a.cat]||CATS.affaires
+        const st = {active:{l:'Active',bg:'var(--vert-p)',c:'var(--vert)'},en_attente:{l:'En attente',bg:'#FFFBEB',c:'#92400E'},suspende:{l:'Suspendue',bg:'var(--rouge-p)',c:'var(--rouge)'}}
+        const s = st['active']
+        return `<div style="background:var(--blanc);border:1px solid var(--border);border-radius:var(--r);
+          padding:12px 14px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:40px;height:40px;border-radius:10px;background:${cat.bg};display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">${cat.emoji}</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.titre}</span>
+              <span class="badge" style="background:${s.bg};color:${s.c};flex-shrink:0">${s.l}</span>
+            </div>
+            <div style="display:flex;gap:12px;font-size:12px;color:var(--texte3)">
+              <span>👁 ${a.vues} vues</span><span>📞 ${a.contacts} contacts</span>
+            </div>
+          </div>
+        </div>`
+      }).join('')}
+    `
+  } else if(ongletProfil==='alertes') {
+    el.innerHTML = `
+      <h2 style="font-size:15px;margin-bottom:6px">Préférences de notifications</h2>
+      <p style="font-size:13px;color:var(--texte3);margin-bottom:18px">Choisissez les alertes que vous souhaitez recevoir</p>
+      <div style="background:var(--rouge-p);border-radius:var(--r);border:1px solid #FECACA;padding:14px;margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--rouge)">🩸 Donneur de sang</div>
+            <div style="font-size:12px;color:#B91C1C;margin-top:2px">Groupe A+ — Être alerté en cas de besoin</div>
+          </div>
+          <div class="toggle-track ${prefAlertes.donneur?'on-r':''}" onclick="togglePref('donneur')">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+      </div>
+      ${[
+        {k:'urgences',emoji:'🚨',label:'Urgences & sécurité',desc:'Alertes de sécurité dans votre zone'},
+        {k:'sante',emoji:'💊',label:'Santé & médical',desc:'Pharmacies de garde, médecins disponibles'},
+        {k:'emploi',emoji:'👔',label:'Emploi',desc:'Nouvelles offres d\'emploi à proximité'},
+        {k:'affaires',emoji:'💼',label:'Opportunités',desc:'Opportunités business dans votre commune'},
+      ].map(p=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;
+          padding:14px 0;border-bottom:1px solid var(--border)">
+          <div style="display:flex;gap:12px;align-items:center">
+            <span style="font-size:22px">${p.emoji}</span>
+            <div>
+              <div style="font-size:14px;font-weight:600">${p.label}</div>
+              <div style="font-size:12px;color:var(--texte3)">${p.desc}</div>
+            </div>
+          </div>
+          <div class="toggle-track ${prefAlertes[p.k]?'on':''}" onclick="togglePref('${p.k}')">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>`).join('')}
+      <button class="btn btn-v btn-block" style="margin-top:20px" onclick="alert('Préférences sauvegardées !')">
+        Sauvegarder les préférences
+      </button>
+    `
+  } else {
+    el.innerHTML = `
+      <h2 style="font-size:15px;margin-bottom:6px">Votre abonnement</h2>
+      <p style="font-size:13px;color:var(--texte3);margin-bottom:18px">Actuellement sur le plan <strong>Gratuit</strong></p>
+      ${ABONNEMENTS.map(ab=>`
+        <div class="abonnement-card ${ab.highlight?'highlight':''}" style="margin-bottom:10px">
+          ${ab.highlight?'<div style="position:absolute;top:0;right:0;background:var(--vert);color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:0 var(--r) 0 8px">POPULAIRE</div>':''}
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+            <div>
+              <div style="font-size:16px;font-weight:800;color:${ab.highlight?'var(--vert)':'var(--texte)'}">${ab.nom}</div>
+              <div style="font-size:15px;font-weight:700;color:var(--texte2);margin-top:2px">
+                ${ab.prix?ab.prix.toLocaleString('fr-FR')+' FCFA/mois':'Gratuit'}
+              </div>
+            </div>
+            ${ab.id==='gratuit'?'<span class="badge b-v">Actuel</span>':''}
+          </div>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:5px">
+            ${ab.features.map(f=>`<li style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--texte2)"><span style="color:var(--vert);font-weight:700">✓</span>${f}</li>`).join('')}
+          </ul>
+          ${ab.id!=='gratuit'?`<button class="btn btn-v btn-block" style="margin-top:12px;height:40px;font-size:13px" onclick="alert('Redirection vers le paiement CinetPay...')">Choisir ce plan</button>`:''}
+        </div>`).join('')}
+    `
+  }
+}
+
+function togglePref(cle) {
+  prefAlertes[cle] = !prefAlertes[cle]
+  rendreProfilContent()
+}
+
+function deconnexion() {
+  if(confirm('Voulez-vous vraiment vous déconnecter ?')) {
+    userData = null
+    naviguer('connexion')
+    setTimeout(()=>{ document.getElementById('nav-bas').style.display='none' }, 100)
+  }
+}
+
+// ============================================================
+// AUTH
+// ============================================================
+function showAuthStep(step) {
+  ['tel','otp','profil'].forEach(s=>document.getElementById('auth-step-'+s).style.display=s===step?'block':'none')
+}
+function envoyerOTP() {
+  const tel = document.getElementById('inp-tel').value
+  if(tel.length < 8) return
+  showAuthStep('otp')
+  initOTPInputs()
+}
+function initOTPInputs() {
+  const inputs = document.querySelectorAll('.otp-inp')
+  inputs.forEach((inp,i)=>{
+    inp.value=''
+    inp.classList.remove('filled')
+    inp.oninput=e=>{
+      if(!/^\d$/.test(inp.value)){inp.value='';return}
+      inp.classList.add('filled')
+      if(i<5) inputs[i+1].focus()
+      const code = [...inputs].map(x=>x.value).join('')
+      document.getElementById('btn-verif').disabled = code.length<6
+    }
+    inp.onkeydown=e=>{
+      if(e.key==='Backspace'&&!inp.value&&i>0){inp.classList.remove('filled');inputs[i-1].focus()}
+    }
+  })
+  setTimeout(()=>inputs[0].focus(),100)
+}
+async function verifierOTP() {
+  const code = [...document.querySelectorAll('.otp-inp')].map(x=>x.value).join('')
+  if(code !== '123456') {
+    document.querySelectorAll('.otp-inp').forEach(i=>i.style.borderColor='var(--rouge)')
+    setTimeout(()=>document.querySelectorAll('.otp-inp').forEach(i=>i.style.borderColor='var(--border)'),1500)
+    return
+  }
+  const btn = document.getElementById('btn-verif')
+  btn.innerHTML='<span class="spinner"></span>'
+  btn.disabled=true
+  await new Promise(r=>setTimeout(r,1000))
+  showAuthStep('profil')
+  btn.innerHTML='Confirmer'
+  btn.disabled=false
+}
+async function creerProfil() {
+  const prenom = document.getElementById('inp-prenom').value
+  const nom = document.getElementById('inp-nom').value
+  const commune = document.getElementById('inp-commune').value
+  if(!prenom||!nom) { alert('Veuillez remplir prénom et nom'); return }
+  userData = {prenom,nom,commune:commune||'Abidjan'}
+  document.getElementById('profil-av').textContent = prenom[0]+nom[0]
+  document.getElementById('profil-nom').textContent = prenom+' '+nom
+  document.getElementById('profil-sub').textContent = (commune||'Abidjan')+' · Membre depuis 1 jour'
+  document.getElementById('user-commune').textContent = (commune||'Yopougon')+', Abidjan'
+  document.getElementById('nav-bas').style.display='flex'
+  naviguer('accueil')
+}
+
+// ============================================================
+// CONTACT & OVERLAYS
+// ============================================================
+function ouvrirContact() {
+  const a = ANNONCES.find(x=>x.id===annonceDetailId)
+  if(!a) return
+  const wa = a.wa||'+2250700000000'
+  const tel = a.tel||a.wa||'+2250700000000'
+  document.getElementById('wa-link').href = 'https://wa.me/'+wa.replace(/[\s+]/g,'')
+  document.getElementById('wa-num').textContent = wa
+  document.getElementById('tel-link').href = 'tel:'+tel
+  document.getElementById('tel-num').textContent = tel
+  document.getElementById('overlay-contact').classList.add('show')
+}
+function fermerOverlay(id) {
+  document.getElementById(id).classList.remove('show')
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded',()=>{
+  rendreListeAnnonces('liste-annonces', ANNONCES)
+  rendreListeAnnonces('liste-explorer', ANNONCES)
+  rendreAlertes()
+  rendreProfilContent()
+  initPublier()
+  document.getElementById('nav-bas').style.display = 'none'
+})
+</script>
+</body>
+</html>
