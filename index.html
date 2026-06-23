@@ -794,6 +794,77 @@ img{display:block;max-width:100%}
 
 <script>
 // ============================================================
+// CONNEXION SUPABASE
+// ============================================================
+const SUPABASE_URL = 'https://vjgozujawftnicbypjsv.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqZ296dWphd2Z0bmljYnlwanN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyMzYxNjEsImV4cCI6MjA5NzgxMjE2MX0.47Qkj7S61ugl6v4MYG53-lNv1FSPDW-Q5M47wlxvc1U'
+
+async function supabaseRequest(table, method='GET', body=null, params='') {
+  const url = `${SUPABASE_URL}/rest/v1/${table}${params}`
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': 'Bearer ' + SUPABASE_KEY,
+    'Content-Type': 'application/json',
+  }
+  if (method === 'POST') headers['Prefer'] = 'return=representation'
+  const opts = { method, headers }
+  if (body) opts.body = JSON.stringify(body)
+  const res = await fetch(url, opts)
+  if (!res.ok) { console.error('Erreur Supabase', await res.text()); return null }
+  return (method === 'GET' || method === 'POST') ? res.json() : true
+}
+
+async function chargerAnnoncesDepuisSupabase() {
+  const data = await supabaseRequest('annonces', 'GET', null, '?statut=eq.active&order=created_at.desc')
+  if (!data) return
+  ANNONCES.length = 0
+  data.forEach(a => ANNONCES.push({
+    id: a.id,
+    titre: a.titre,
+    desc: a.description.slice(0, 140),
+    desc_long: a.description,
+    cat: a.categorie,
+    commune: a.commune,
+    quartier: a.quartier,
+    prix: a.prix,
+    devise: a.devise || 'FCFA',
+    negociable: a.prix_negociable,
+    urgent: a.est_urgent,
+    sponsorise: false,
+    vues: a.nb_vues || 0,
+    contacts: a.nb_contacts || 0,
+    wa: a.contact_whatsapp || '',
+    tel: a.contact_tel || '',
+    auteur: a.auteur_nom,
+    created: new Date(a.created_at).getTime(),
+    _dbId: a.id,
+  }))
+  rendreListeAnnonces('liste-annonces', ANNONCES)
+  rendreListeAnnonces('liste-explorer', ANNONCES)
+}
+
+async function publierAnnonceSupabase(annonceObj) {
+  const payload = {
+    auteur_nom: annonceObj.auteur,
+    auteur_telephone: annonceObj.tel || null,
+    titre: annonceObj.titre,
+    description: annonceObj.desc_long,
+    categorie: annonceObj.cat,
+    commune: annonceObj.commune,
+    quartier: annonceObj.quartier,
+    prix: annonceObj.prix,
+    devise: annonceObj.devise,
+    prix_negociable: annonceObj.negociable,
+    est_urgent: annonceObj.urgent,
+    contact_whatsapp: annonceObj.wa,
+    contact_tel: annonceObj.tel,
+    statut: 'active',
+  }
+  const res = await supabaseRequest('annonces', 'POST', payload)
+  return res && res[0] ? res[0].id : null
+}
+
+// ============================================================
 // DONNÉES
 // ============================================================
 const CATS = {
@@ -1233,19 +1304,25 @@ async function publierAnnonce() {
   const btn = document.getElementById('btn-suivant-pub')
   btn.disabled = true
   btn.innerHTML = '<span class="spinner"></span> Publication...'
-  await new Promise(r=>setTimeout(r,1800))
+
   const titre = document.getElementById('pub-titre')?.value||'Nouvelle annonce'
   const commune = document.getElementById('pub-commune')?.value||'Abidjan'
-  ANNONCES.unshift({
+  const nouvelleAnnonce = {
     id:'new-'+Date.now(), titre, desc:document.getElementById('pub-desc')?.value.slice(0,120)||'',
     desc_long:document.getElementById('pub-desc')?.value||'',
     cat:catPubSelectee||'affaires', commune, quartier:document.getElementById('pub-quartier')?.value||null,
     prix:document.getElementById('pub-prix')?.value?Number(document.getElementById('pub-prix').value):null,
     devise:'FCFA', negociable:checkNeg, urgent:checkUrg, sponsorise:false,
     vues:0, contacts:0, wa:document.getElementById('pub-wa')?.value||'+225 XX XX XX XX',
-    tel:document.getElementById('pub-tel')?.value||'', auteur:userData?.prenom+' '+userData?.nom||'Moi',
+    tel:document.getElementById('pub-tel')?.value||'', auteur:(userData?.prenom+' '+userData?.nom)||'Moi',
     created:Date.now()
-  })
+  }
+
+  // Envoi réel vers Supabase
+  const dbId = await publierAnnonceSupabase(nouvelleAnnonce)
+  if (dbId) nouvelleAnnonce.id = dbId
+
+  ANNONCES.unshift(nouvelleAnnonce)
   rendreListeAnnonces('liste-annonces',ANNONCES)
   rendreListeAnnonces('liste-explorer',ANNONCES)
   // Reset
@@ -1585,6 +1662,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   rendreProfilContent()
   initPublier()
   document.getElementById('nav-bas').style.display = 'none'
+  // Charger les vraies données depuis Supabase
+  chargerAnnoncesDepuisSupabase()
 })
 </script>
 </body>
