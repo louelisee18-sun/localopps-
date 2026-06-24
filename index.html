@@ -30,28 +30,63 @@ img{display:block;max-width:100%}
   background:var(--surface);overflow-x:hidden}
 
 @media (min-width:900px){
-  body.in-app{background:#0F1F17;
-    background-image:radial-gradient(circle at 20% 20%, rgba(26,138,86,.15), transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(249,115,22,.08), transparent 50%);
-  }
+  body.in-app{background:var(--surface)}
   body.in-app #app-shell{
-    margin:32px auto;min-height:calc(100vh - 64px);
-    border-radius:32px;box-shadow:0 30px 80px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.06);
-    border:6px solid #15291F;
+    margin:0 auto;min-height:100vh;max-width:none;
+    border-radius:0;box-shadow:none;border:none;background:var(--surface);
   }
-  body.in-app::before{
-    content:'LocalOpps — Aperçu mobile';
-    position:fixed;top:14px;left:50%;transform:translateX(-50%);
-    color:rgba(255,255,255,.4);font-size:12px;font-weight:500;letter-spacing:.04em;
-    font-family:'Sora',sans-serif;z-index:1;
+
+  /* Mode connexion/inscription — plein écran blanc, façon Telegram Web */
+  body.in-app.auth-mode #app-shell{background:#fff}
+
+  /* Mode application connectée — site web pleine largeur, nav en haut */
+  body.in-app.app-mode #app-shell{
+    max-width:none;
   }
-  body.in-app::after{
-    content:'💻 Vous êtes sur ordinateur — cette application est conçue mobile-first. Réduisez votre fenêtre pour la voir en plein écran, ou continuez ici dans son cadre.';
-    position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
-    color:rgba(255,255,255,.35);font-size:11px;max-width:380px;text-align:center;
-    font-family:'Sora',sans-serif;z-index:1;line-height:1.5;
+  body.in-app.app-mode .page.active{
+    max-width:1180px;margin:0 auto;
   }
+  body.in-app.app-mode #nav-bas{display:none !important}
+  body.in-app.app-mode #hdr-accueil,
+  body.in-app.app-mode .detail-header,
+  body.in-app.app-mode .pub-header,
+  body.in-app.app-mode .expl-search,
+  body.in-app.app-mode .alertes-header,
+  body.in-app.app-mode .profil-hero{
+    max-width:none;border-radius:0;
+  }
+  body.in-app.app-mode #app-nav-desktop{display:block}
+
+  /* Listes en grille pleine largeur (Accueil, Explorer) */
+  body.in-app.app-mode #liste-annonces,
+  body.in-app.app-mode #liste-explorer{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
+    padding:0 16px;align-items:start;
+  }
+  body.in-app.app-mode #liste-alertes{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
+    padding:0 16px;align-items:start;
+  }
+  body.in-app.app-mode .ann-card,
+  body.in-app.app-mode .urg-card,
+  body.in-app.app-mode .alerte-card{margin:0}
+  body.in-app.app-mode .urg-card{grid-column:1/-1}
 }
+
+/* Header desktop app — caché par défaut, affiché seulement en app-mode (CSS ci-dessus) */
+#app-nav-desktop{display:none;background:var(--blanc);border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:150}
+.app-nav-inner{max-width:1180px;margin:0 auto;padding:14px 32px;
+  display:flex;align-items:center;gap:32px}
+.app-nav-links{display:flex;gap:8px;flex:1}
+.app-nav-link{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;
+  color:var(--texte3);padding:8px 14px;border-radius:var(--rf);cursor:pointer;transition:all .15s}
+.app-nav-link:hover{background:var(--surface2);color:var(--texte2)}
+.app-nav-link.actif{background:var(--vert-p);color:var(--vert)}
+.app-nav-right{display:flex;align-items:center;gap:18px}
+.app-nav-loc{font-size:13px;color:var(--texte3);display:flex;align-items:center;gap:5px}
+.app-nav-avatar{width:36px;height:36px;border-radius:50%;background:var(--vert);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer}
 
 /* Animations */
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -315,6 +350,33 @@ img{display:block;max-width:100%}
 .auth-logo span{color:#6EE7B7}
 .auth-body{flex:1;padding:32px 24px}
 .otp-inputs{display:flex;gap:10px;justify-content:center;margin-bottom:28px}
+
+/* ============ MODE CONNEXION DESKTOP — façon Telegram Web ============ */
+@media(min-width:900px){
+  body.in-app.auth-mode #pg-connexion{
+    display:flex;align-items:center;justify-content:center;
+    min-height:100vh;background:#fff;
+  }
+  body.in-app.auth-mode .auth-card{
+    width:380px;display:flex;flex-direction:column;align-items:center;
+    text-align:center;
+  }
+  body.in-app.auth-mode .auth-hero{
+    background:none;padding:0 0 28px;
+  }
+  body.in-app.auth-mode .auth-logo{
+    color:var(--vert);font-size:30px;
+  }
+  body.in-app.auth-mode .auth-logo span{color:var(--orange)}
+  body.in-app.auth-mode .auth-hero > div{color:var(--texte3) !important}
+  body.in-app.auth-mode .auth-body{
+    width:100%;padding:0;text-align:left;
+  }
+  body.in-app.auth-mode .app-back-land{
+    position:fixed;top:24px;left:24px;
+    background:var(--surface2);color:var(--texte2);
+  }
+}
 .otp-inp{width:46px;height:54px;text-align:center;font-size:22px;font-weight:700;
   border:2px solid var(--border);border-radius:var(--r);background:var(--blanc);
   color:var(--vert);transition:all .15s}
@@ -369,6 +431,13 @@ img{display:block;max-width:100%}
 .land-nav-actions{display:flex;gap:10px}
 .land-nav-actions .btn{height:40px;font-size:13px;padding:0 18px}
 
+.land-burger{display:none;color:var(--vert);padding:6px;flex-shrink:0}
+.land-menu-mobile{display:none;flex-direction:column;background:#fff;
+  border-top:1px solid var(--border);padding:8px 20px 16px}
+.land-menu-mobile.open{display:flex}
+.land-menu-mobile a{font-size:15px;font-weight:500;color:var(--texte2);padding:12px 0}
+.land-menu-mobile-sep{height:1px;background:var(--border);margin:6px 0}
+
 /* Hero */
 .land-hero{padding:80px 0 60px;overflow:hidden;position:relative}
 .land-hero-inner{max-width:1140px;margin:0 auto;padding:0 32px;
@@ -380,7 +449,7 @@ img{display:block;max-width:100%}
 .land-hero-text h1 span{color:var(--vert)}
 .land-hero-text p{font-size:16px;color:var(--texte2);line-height:1.7;max-width:480px;margin-bottom:28px}
 .land-hero-cta{display:flex;gap:12px;margin-bottom:40px;flex-wrap:wrap}
-.land-stats{display:flex;gap:36px}
+.land-stats{display:flex;gap:36px;flex-wrap:wrap}
 .land-stats div{display:flex;flex-direction:column}
 .land-stats strong{font-size:24px;font-weight:800;color:var(--vert)}
 .land-stats span{font-size:12px;color:var(--texte3);margin-top:2px}
@@ -436,32 +505,39 @@ img{display:block;max-width:100%}
 .land-footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding:20px 32px;
   text-align:center;font-size:12px;color:rgba(255,255,255,.4)}
 
-.app-back-land{display:none;position:absolute;top:14px;left:14px;z-index:50;
+.app-back-land{display:block;position:absolute;top:14px;left:14px;z-index:50;
   font-size:12px;font-weight:600;color:rgba(255,255,255,.85);background:rgba(255,255,255,.15);
   padding:6px 12px;border-radius:var(--rf)}
 
-@media(min-width:900px){
-  .app-back-land{display:block}
-}
-
 @media(max-width:980px){
-  .land-hero-inner{grid-template-columns:1fr;gap:40px}
+  .land-hero-inner{grid-template-columns:1fr;gap:40px;text-align:center}
   .land-hero-visual{display:none}
   .land-hero-text h1{font-size:34px}
+  .land-hero-text p{margin:0 auto 28px}
+  .land-hero-cta{justify-content:center}
+  .land-stats{justify-content:center}
   .land-nav-links{display:none}
+  .land-burger{display:block}
+  .land-nav-actions .btn-v{display:none}
   .land-grid-3{grid-template-columns:1fr}
   .land-cats-grid{grid-template-columns:repeat(2,1fr)}
   .land-steps{grid-template-columns:1fr}
+  .land-section-inner{text-align:center}
+  .land-step{padding-left:0;display:flex;flex-direction:column;align-items:center}
+  .land-step-num{position:static;margin-bottom:14px}
+  .land-feature{text-align:left}
   .land-footer-grid{grid-template-columns:1fr 1fr}
 }
 @media(max-width:560px){
   .land-section-inner{padding:0 20px}
   .land-nav-inner{padding:14px 20px}
-  .land-nav-actions .btn-g{display:none}
+  .land-nav-actions .btn-v{display:none}
   .land-hero{padding:48px 0 40px}
   .land-hero-text h1{font-size:28px}
   .land-cats-grid{grid-template-columns:1fr 1fr}
-  .land-footer-grid{grid-template-columns:1fr}
+  .land-footer-grid{grid-template-columns:1fr;text-align:center}
+  .land-footer-grid > div{display:flex;flex-direction:column;align-items:center}
+  .land-footer-grid p{margin:0 auto}
 }
 </style>
 </head>
@@ -484,6 +560,17 @@ img{display:block;max-width:100%}
         <button class="btn btn-g" onclick="entrerApp('tel')">Connexion</button>
         <button class="btn btn-v" onclick="entrerApp('tel')">Créer un compte</button>
       </div>
+      <button class="land-burger" onclick="toggleMenuMobile()" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+      </button>
+    </div>
+    <div class="land-menu-mobile" id="menu-mobile">
+      <a href="#fonctionnalites" onclick="toggleMenuMobile()">Services</a>
+      <a href="#categories" onclick="toggleMenuMobile()">Catégories</a>
+      <a href="#comment" onclick="toggleMenuMobile()">Comment ça marche</a>
+      <a href="#contact" onclick="toggleMenuMobile()">Contact</a>
+      <div class="land-menu-mobile-sep"></div>
+      <a onclick="entrerApp('tel')" style="cursor:pointer;font-weight:700;color:var(--vert)">Connexion</a>
     </div>
   </nav>
 
@@ -633,7 +720,7 @@ img{display:block;max-width:100%}
         <h4>Contact</h4>
         <a href="mailto:contact@localopps.ci">contact@localopps.ci</a>
         <a href="https://wa.me/2250000000000">WhatsApp support</a>
-        <span style="color:rgba(255,255,255,.5);font-size:13px">Abidjan, Côte d'Ivoire</span>
+        <span style="display:block;margin:10px 0 24px;color:rgba(255,255,255,.5);font-size:13px">Abidjan, Côte d'Ivoire</span>
       </div>
     </div>
     <div class="land-footer-bottom">© 2026 LocalOpps. Tous droits réservés.</div>
@@ -643,6 +730,25 @@ img{display:block;max-width:100%}
 <!-- ============================================================ -->
 <!--  APPLICATION (cadrée mobile)                                  -->
 <!-- ============================================================ -->
+<!-- ============================================================ -->
+<!--  HEADER DESKTOP APP — visible uniquement sur grand écran     -->
+<!-- ============================================================ -->
+<nav id="app-nav-desktop">
+  <div class="app-nav-inner">
+    <div class="land-logo" style="cursor:pointer" onclick="naviguer('accueil')">Local<span>Opps</span></div>
+    <div class="app-nav-links">
+      <a onclick="naviguer('accueil')" class="app-nav-link" data-nav="accueil">🏠 Accueil</a>
+      <a onclick="naviguer('explorer')" class="app-nav-link" data-nav="explorer">🔍 Explorer</a>
+      <a onclick="naviguer('publier')" class="app-nav-link" data-nav="publier">➕ Publier</a>
+      <a onclick="naviguer('alertes')" class="app-nav-link" data-nav="alertes">🔔 Alertes</a>
+    </div>
+    <div class="app-nav-right">
+      <div class="app-nav-loc">📍 <span id="dnav-commune">Yopougon, Abidjan</span></div>
+      <div class="app-nav-avatar" onclick="naviguer('profil')" id="dnav-avatar">AK</div>
+    </div>
+  </div>
+</nav>
+
 <div id="app-shell" style="display:none">
 
 <!-- ============================================================ -->
@@ -650,6 +756,7 @@ img{display:block;max-width:100%}
 <!-- ============================================================ -->
 <div id="pg-connexion" class="page active">
   <button class="app-back-land" onclick="retourLanding()">← Retour au site</button>
+  <div class="auth-card">
   <div class="auth-hero">
     <div class="auth-logo">Local<span>Opps</span></div>
     <div style="font-size:13px;color:rgba(255,255,255,.8);margin-top:6px;text-align:center">
@@ -712,6 +819,7 @@ img{display:block;max-width:100%}
       </div>
       <button class="btn btn-v btn-block" style="height:50px;font-size:15px" onclick="creerProfil()">Commencer →</button>
     </div>
+  </div>
   </div>
 </div>
 
@@ -1300,6 +1408,9 @@ function naviguer(page) {
   const ni = document.getElementById('nav-'+page)
   if(ni) ni.classList.add('actif')
   document.getElementById('nav-bas').style.display = ['connexion','detail'].includes(page)?'none':'flex'
+  document.querySelectorAll('.app-nav-link').forEach(n=>n.classList.remove('actif'))
+  const dlink = document.querySelector('.app-nav-link[data-nav="'+page+'"]')
+  if(dlink) dlink.classList.add('actif')
   pageActuelle = page
   window.scrollTo(0,0)
 }
@@ -1308,18 +1419,9 @@ function retour() {
   naviguer(pageRetour)
 }
 
-function ouvrirDetail(id) {
-  const a = ANNONCES.find(x=>x.id===id)
-  if(!a) return
-  pageRetour = pageActuelle
-  annonceDetailId = id
-  favDetailOn = favoriIds.has(id)
-  const ico = document.getElementById('ico-fav')
-  ico.style.stroke = favDetailOn ? '#DC2626' : 'var(--texte3)'
-  ico.style.fill = favDetailOn ? '#DC2626' : 'none'
-  document.getElementById('detail-titre-hdr').textContent = a.titre
+function genererHTMLDetail(a) {
   const cat = CATS[a.cat]||CATS.affaires
-  document.getElementById('detail-content').innerHTML = `
+  return `
     <div class="detail-img" style="background:${cat.bg}">${cat.emoji}</div>
     <div class="detail-body">
       <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
@@ -1351,6 +1453,19 @@ function ouvrirDetail(id) {
       </div>
     </div>
   `
+}
+
+function ouvrirDetail(id) {
+  const a = ANNONCES.find(x=>x.id===id)
+  if(!a) return
+  pageRetour = pageActuelle
+  annonceDetailId = id
+  favDetailOn = favoriIds.has(id)
+  const ico = document.getElementById('ico-fav')
+  ico.style.stroke = favDetailOn ? '#DC2626' : 'var(--texte3)'
+  ico.style.fill = favDetailOn ? '#DC2626' : 'none'
+  document.getElementById('detail-titre-hdr').textContent = a.titre
+  document.getElementById('detail-content').innerHTML = genererHTMLDetail(a)
   naviguer('detail')
 }
 
@@ -1375,7 +1490,7 @@ function rendreCarte(a) {
   const cat = CATS[a.cat]||CATS.affaires
   const fav = favoriIds.has(a.id)
   if(a.urgent) return `
-    <div class="urg-card fade-up" onclick="ouvrirDetail('${a.id}')">
+    <div class="urg-card fade-up" data-annonce-id="${a.id}" onclick="ouvrirDetail('${a.id}')">
       <div class="card">
         <div class="urg-bar"><div class="urg-dot"></div><span class="urg-tag">URGENT</span><span class="urg-time">${tempsRelatif(a.created)}</span></div>
         <div class="urg-body">
@@ -1389,7 +1504,7 @@ function rendreCarte(a) {
       </div>
     </div>`
   return `
-    <div class="ann-card fade-up" onclick="ouvrirDetail('${a.id}')">
+    <div class="ann-card fade-up" data-annonce-id="${a.id}" onclick="ouvrirDetail('${a.id}')">
       <div class="card" style="padding:12px 14px">
         <div class="ann-head">
           <div class="ann-ico" style="background:${cat.bg}">${cat.emoji}</div>
@@ -1650,18 +1765,23 @@ async function publierAnnonce() {
   ANNONCES.unshift(nouvelleAnnonce)
   rendreListeAnnonces('liste-annonces',ANNONCES)
   rendreListeAnnonces('liste-explorer',ANNONCES)
-  // Reset
+  // Reset du formulaire (sans toucher au DOM, on le réutilisera après "Voir l'accueil")
   etapePubActuelle=1; catPubSelectee=''; checkNeg=false; checkUrg=false; diffusionSel='gratuit'
-  btn.disabled=false; btn.textContent='Continuer →'
-  document.querySelectorAll('[id^="etape-"]').forEach(e=>e.style.display='none')
-  document.getElementById('etape-1').style.display='block'
-  document.getElementById('prog-fill').style.width='20%'
-  document.getElementById('prog-label').textContent='Catégorie'
-  document.getElementById('prog-step').textContent='Étape 1 / 5'
-  document.getElementById('btn-retour-pub').style.display='none'
+  ;['pub-titre','pub-desc','pub-prix','pub-quartier','pub-adresse','pub-wa','pub-tel'].forEach(id=>{
+    const el = document.getElementById(id); if(el) el.value=''
+  })
+  const selCommune = document.getElementById('pub-commune'); if(selCommune) selCommune.value=''
+  document.getElementById('chk-neg')?.classList.remove('on')
+  document.getElementById('chk-urg')?.classList.remove('on','on-r')
   document.querySelectorAll('.cat-opt').forEach(e=>{e.classList.remove('sel');e.querySelector('strong').style.color='var(--texte2)'})
-  // Page succès
-  document.getElementById('pg-publier').innerHTML = `
+  initPublier()
+
+  // Afficher l'écran de succès par-dessus, sans détruire le formulaire en dessous
+  document.getElementById('pub-success-overlay')?.remove()
+  const overlaySucces = document.createElement('div')
+  overlaySucces.id = 'pub-success-overlay'
+  overlaySucces.style.cssText = 'position:absolute;inset:0;background:var(--surface);z-index:60'
+  overlaySucces.innerHTML = `
     <div class="succes-wrap">
       <div style="width:80px;height:80px;border-radius:50%;background:var(--vert);color:#fff;
         display:flex;align-items:center;justify-content:center;font-size:38px;margin-bottom:24px;
@@ -1673,11 +1793,13 @@ async function publierAnnonce() {
       <button class="btn btn-v btn-block" style="height:50px;font-size:15px" onclick="allerAccueil()">Voir l'accueil</button>
     </div>
   `
-  naviguer('publier')
+  document.getElementById('pg-publier').style.position = 'relative'
+  document.getElementById('pg-publier').appendChild(overlaySucces)
+  btn.disabled=false; btn.textContent='Continuer →'
 }
 function allerAccueil() {
-  // Recréer la page publier
-  location.reload()
+  document.getElementById('pub-success-overlay')?.remove()
+  naviguer('accueil')
 }
 
 // ============================================================
@@ -1695,7 +1817,7 @@ function rendreAlerteCard(a) {
     securite:{emoji:'🚔',label:'Sécurité',bg:'#FFFBEB',color:'#92400E'},
     autre:{emoji:'📢',label:'Information',bg:'#F5F3FF',color:'#6D28D9'}}
   const c = cfg[a.type]||cfg.autre
-  return `<div class="alerte-card fade-up" onclick="ouvrirAlerteDetail('${a.id}')">
+  return `<div class="alerte-card fade-up" data-alerte-id="${a.id}" onclick="ouvrirAlerteDetail('${a.id}')">
     <div class="card" style="padding:12px 14px">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
         <span class="alerte-type" style="background:${c.bg};color:${c.color}">${c.emoji} ${c.label}</span>
@@ -1716,10 +1838,8 @@ function rendreAlerteCard(a) {
 function rendreAlertes() {
   document.getElementById('liste-alertes').innerHTML = ALERTES_DATA.map(rendreAlerteCard).join('')
 }
-function ouvrirAlerteDetail(id) {
-  const a = ALERTES_DATA.find(x=>x.id===id)
-  if(!a) return
-  document.getElementById('sheet-alerte-content').innerHTML = `
+function genererHTMLAlerteDetail(a) {
+  return `
     <div class="sheet-handle"></div>
     ${a.type==='sang'?`<div style="background:linear-gradient(135deg,var(--rouge),#991B1B);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px">
       <span style="font-size:32px">🩸</span>
@@ -1750,6 +1870,12 @@ function ouvrirAlerteDetail(id) {
     </button>
     <button class="btn btn-g btn-block" onclick="fermerOverlay('overlay-alerte')">Fermer</button>
   `
+}
+
+function ouvrirAlerteDetail(id) {
+  const a = ALERTES_DATA.find(x=>x.id===id)
+  if(!a) return
+  document.getElementById('sheet-alerte-content').innerHTML = genererHTMLAlerteDetail(a)
   document.getElementById('overlay-alerte').classList.add('show')
 }
 function ouvrirAlerte() {
@@ -1954,14 +2080,19 @@ async function creerProfil() {
   document.getElementById('profil-nom').textContent = prenom+' '+nom
   document.getElementById('profil-sub').textContent = (commune||'Abidjan')+' · Membre depuis 1 jour'
   document.getElementById('user-commune').textContent = (commune||'Yopougon')+', Abidjan'
+  document.getElementById('dnav-avatar').textContent = prenom[0]+nom[0]
+  document.getElementById('dnav-commune').textContent = (commune||'Yopougon')+', Abidjan'
   document.getElementById('nav-bas').style.display='flex'
+  document.body.classList.remove('auth-mode')
+  document.body.classList.add('app-mode')
   naviguer('accueil')
 }
 
 // ============================================================
 // CONTACT & OVERLAYS
 // ============================================================
-function ouvrirContact() {
+function ouvrirContact(id) {
+  if (id) annonceDetailId = id
   const a = ANNONCES.find(x=>x.id===annonceDetailId)
   if(!a) return
   const wa = a.wa||'+2250700000000'
@@ -1982,10 +2113,15 @@ function fermerOverlay(id) {
 // ============================================================
 // LANDING PAGE — TRANSITIONS
 // ============================================================
+function toggleMenuMobile() {
+  document.getElementById('menu-mobile').classList.toggle('open')
+}
 function entrerApp(etape) {
   document.getElementById('landing').style.display = 'none'
   document.getElementById('app-shell').style.display = 'block'
   document.body.classList.add('in-app')
+  document.body.classList.toggle('auth-mode', !userData)
+  document.body.classList.toggle('app-mode', !!userData)
   naviguer(userData ? 'accueil' : 'connexion')
   if (!userData) showAuthStep(etape || 'tel')
   window.scrollTo(0,0)
@@ -1994,6 +2130,8 @@ function retourLanding() {
   document.getElementById('app-shell').style.display = 'none'
   document.getElementById('landing').style.display = 'block'
   document.body.classList.remove('in-app')
+  document.body.classList.remove('auth-mode')
+  document.body.classList.remove('app-mode')
   window.scrollTo(0,0)
 }
 
