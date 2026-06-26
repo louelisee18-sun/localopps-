@@ -350,6 +350,10 @@ img{display:block;max-width:100%}
 .auth-logo span{color:#6EE7B7}
 .auth-body{flex:1;padding:32px 24px}
 .otp-inputs{display:flex;gap:10px;justify-content:center;margin-bottom:28px}
+.auth-tabs{display:flex;background:var(--surface2);border-radius:var(--rf);padding:4px;margin-bottom:24px}
+.auth-tab{flex:1;padding:9px 0;border-radius:var(--rf);font-size:13px;font-weight:600;
+  color:var(--texte3);background:transparent;transition:all .15s}
+.auth-tab.actif{background:var(--blanc);color:var(--vert);box-shadow:0 1px 4px rgba(0,0,0,.08)}
 
 /* ============ MODE CONNEXION DESKTOP — façon Telegram Web ============ */
 @media(min-width:900px){
@@ -557,8 +561,8 @@ img{display:block;max-width:100%}
         <a href="#contact">Contact</a>
       </div>
       <div class="land-nav-actions">
-        <button class="btn btn-g" onclick="entrerApp('tel')">Connexion</button>
-        <button class="btn btn-v" onclick="entrerApp('tel')">Créer un compte</button>
+        <button class="btn btn-g" onclick="entrerApp('connexion')">Connexion</button>
+        <button class="btn btn-v" onclick="entrerApp('inscription')">Créer un compte</button>
       </div>
       <button class="land-burger" onclick="toggleMenuMobile()" aria-label="Menu">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
@@ -570,7 +574,7 @@ img{display:block;max-width:100%}
       <a href="#comment" onclick="toggleMenuMobile()">Comment ça marche</a>
       <a href="#contact" onclick="toggleMenuMobile()">Contact</a>
       <div class="land-menu-mobile-sep"></div>
-      <a onclick="entrerApp('tel')" style="cursor:pointer;font-weight:700;color:var(--vert)">Connexion</a>
+      <a onclick="entrerApp('connexion')" style="cursor:pointer;font-weight:700;color:var(--vert)">Connexion</a>
     </div>
   </nav>
 
@@ -581,7 +585,7 @@ img{display:block;max-width:100%}
         <h1>L'opportunité était<br>dans votre quartier.<br><span>Maintenant vous le savez.</span></h1>
         <p>LocalOpps connecte les habitants d'une localité aux opportunités d'affaires, emplois, ventes urgentes, bourses d'études et alertes médicales qui se passent tout près d'eux — en temps réel, par SMS et sur l'application.</p>
         <div class="land-hero-cta">
-          <button class="btn btn-v" style="height:52px;padding:0 28px;font-size:15px" onclick="entrerApp('tel')">Créer mon compte gratuit →</button>
+          <button class="btn btn-v" style="height:52px;padding:0 28px;font-size:15px" onclick="entrerApp('inscription')">Créer mon compte gratuit →</button>
           <button class="btn btn-g" style="height:52px;padding:0 28px;font-size:15px" onclick="document.getElementById('fonctionnalites').scrollIntoView({behavior:'smooth'})">Découvrir le service</button>
         </div>
         <div class="land-stats">
@@ -695,7 +699,7 @@ img{display:block;max-width:100%}
   <section class="land-cta-band">
     <div class="land-section-inner">
       <h2>Votre prochaine opportunité<br>est peut-être déjà publiée.</h2>
-      <button class="btn" style="height:52px;padding:0 32px;font-size:15px;background:#fff;color:var(--vert)" onclick="entrerApp('tel')">Rejoindre LocalOpps gratuitement</button>
+      <button class="btn" style="height:52px;padding:0 32px;font-size:15px;background:#fff;color:var(--vert)" onclick="entrerApp('inscription')">Rejoindre LocalOpps gratuitement</button>
     </div>
   </section>
 
@@ -713,8 +717,8 @@ img{display:block;max-width:100%}
       </div>
       <div>
         <h4>Compte</h4>
-        <a onclick="entrerApp('tel')" style="cursor:pointer">Se connecter</a>
-        <a onclick="entrerApp('tel')" style="cursor:pointer">Créer un compte</a>
+        <a onclick="entrerApp('connexion')" style="cursor:pointer">Se connecter</a>
+        <a onclick="entrerApp('inscription')" style="cursor:pointer">Créer un compte</a>
       </div>
       <div>
         <h4>Contact</h4>
@@ -764,30 +768,64 @@ img{display:block;max-width:100%}
     </div>
   </div>
   <div class="auth-body" id="auth-step-tel">
-    <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Bienvenue 👋</h2>
-    <p style="font-size:14px;color:var(--texte3);margin-bottom:28px">Entrez votre numéro de téléphone pour vous connecter ou créer un compte</p>
-    <label class="lbl">Numéro de téléphone</label>
-    <div style="position:relative;margin-bottom:24px">
-      <div style="position:absolute;left:14px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:8px;font-size:16px;color:var(--texte2);pointer-events:none">
-        🇨🇮 <span style="font-size:13px;color:var(--texte3)">+225</span>
-      </div>
-      <input class="inp" id="inp-tel" style="padding-left:72px" type="tel" inputmode="numeric" placeholder="07 XX XX XX XX" oninput="document.getElementById('btn-otp').disabled=this.value.length<8">
+    <div class="auth-tabs">
+      <button class="auth-tab actif" id="auth-tab-connexion" onclick="switchAuthTab('connexion')">Connexion</button>
+      <button class="auth-tab" id="auth-tab-inscription" onclick="switchAuthTab('inscription')">Créer un compte</button>
     </div>
-    <button class="btn btn-v btn-block" id="btn-otp" style="height:50px;font-size:15px" disabled onclick="envoyerOTP()">
-      Recevoir le code SMS
-    </button>
-    <p style="font-size:12px;color:var(--pale);text-align:center;margin-top:14px">En continuant, vous acceptez nos conditions d'utilisation</p>
-    <div style="margin-top:24px;padding:14px;background:var(--vert-p);border-radius:var(--r);font-size:13px;color:var(--vert)">
-      💡 <strong>Démo :</strong> Entrez n'importe quel numéro et le code OTP sera <strong>123456</strong>
+
+    <!-- Bloc CONNEXION -->
+    <div id="auth-bloc-connexion">
+      <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Bon retour 👋</h2>
+      <p style="font-size:14px;color:var(--texte3);margin-bottom:24px">Connectez-vous avec votre email et votre mot de passe</p>
+      <label class="lbl">Adresse email</label>
+      <div style="position:relative;margin-bottom:16px">
+        <div style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none">✉️</div>
+        <input class="inp" id="conn-email" style="padding-left:42px" type="email" placeholder="vous@exemple.com" oninput="majBoutonConnexion()">
+      </div>
+      <label class="lbl">Mot de passe</label>
+      <div style="position:relative;margin-bottom:8px">
+        <div style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none">🔑</div>
+        <input class="inp" id="conn-password" style="padding-left:42px" type="password" placeholder="••••••••" oninput="majBoutonConnexion()">
+      </div>
+      <div style="text-align:right;margin-bottom:20px">
+        <a onclick="alert('Lien de réinitialisation envoyé par email (simulation)')" style="font-size:12px;color:var(--vert);font-weight:500;cursor:pointer">Mot de passe oublié ?</a>
+      </div>
+      <button class="btn btn-v btn-block" id="btn-connexion" style="height:50px;font-size:15px" disabled onclick="connecterUtilisateur()">Se connecter</button>
+      <div style="margin-top:24px;padding:14px;background:var(--vert-p);border-radius:var(--r);font-size:13px;color:var(--vert)">
+        💡 <strong>Démo :</strong> entrez n'importe quel email + mot de passe (6 car. min) déjà inscrit
+      </div>
+    </div>
+
+    <!-- Bloc INSCRIPTION -->
+    <div id="auth-bloc-inscription" style="display:none">
+      <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Bienvenue 👋</h2>
+      <p style="font-size:14px;color:var(--texte3);margin-bottom:24px">Créez votre compte avec un email et un mot de passe</p>
+      <label class="lbl">Adresse email</label>
+      <div style="position:relative;margin-bottom:16px">
+        <div style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none">✉️</div>
+        <input class="inp" id="inp-tel" style="padding-left:42px" type="email" placeholder="vous@exemple.com" oninput="majBoutonInscription()">
+      </div>
+      <label class="lbl">Choisissez un mot de passe</label>
+      <div style="position:relative;margin-bottom:24px">
+        <div style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none">🔑</div>
+        <input class="inp" id="insc-password" style="padding-left:42px" type="password" placeholder="6 caractères minimum" oninput="majBoutonInscription()">
+      </div>
+      <button class="btn btn-v btn-block" id="btn-otp" style="height:50px;font-size:15px" disabled onclick="envoyerOTP()">
+        Recevoir le code de vérification
+      </button>
+      <p style="font-size:12px;color:var(--pale);text-align:center;margin-top:14px">En continuant, vous acceptez nos conditions d'utilisation</p>
+      <div style="margin-top:24px;padding:14px;background:var(--vert-p);border-radius:var(--r);font-size:13px;color:var(--vert)">
+        💡 <strong>Démo :</strong> Entrez n'importe quel email et le code OTP sera <strong>123456</strong>
+      </div>
     </div>
   </div>
 
   <div class="auth-body" id="auth-step-otp" style="display:none">
     <button onclick="showAuthStep('tel')" style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--texte3);margin-bottom:24px">
-      ← Modifier le numéro
+      ← Modifier l'email
     </button>
-    <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Entrez le code 🔐</h2>
-    <p style="font-size:14px;color:var(--texte3);margin-bottom:28px">Un code à 6 chiffres a été envoyé à votre numéro</p>
+    <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Vérifiez votre email 🔐</h2>
+    <p style="font-size:14px;color:var(--texte3);margin-bottom:28px">Un code à 6 chiffres a été envoyé à <strong id="email-affiche" style="color:var(--texte)"></strong> pour confirmer votre inscription</p>
     <div class="otp-inputs" id="otp-inputs">
       <input class="otp-inp" maxlength="1" inputmode="numeric" type="text">
       <input class="otp-inp" maxlength="1" inputmode="numeric" type="text">
@@ -796,7 +834,7 @@ img{display:block;max-width:100%}
       <input class="otp-inp" maxlength="1" inputmode="numeric" type="text">
       <input class="otp-inp" maxlength="1" inputmode="numeric" type="text">
     </div>
-    <button class="btn btn-v btn-block" id="btn-verif" style="height:50px;font-size:15px" disabled onclick="verifierOTP()">Confirmer</button>
+    <button class="btn btn-v btn-block" id="btn-verif" style="height:50px;font-size:15px" disabled onclick="verifierOTP()">Confirmer mon inscription</button>
     <p style="font-size:13px;color:var(--pale);text-align:center;margin-top:14px" id="otp-hint">Code de démo : 123456</p>
   </div>
 
@@ -817,7 +855,33 @@ img{display:block;max-width:100%}
           <option>Koumassi</option><option>Treichville</option><option>Port-Bouët</option>
         </select>
       </div>
-      <button class="btn btn-v btn-block" style="height:50px;font-size:15px" onclick="creerProfil()">Commencer →</button>
+      <button class="btn btn-v btn-block" style="height:50px;font-size:15px" onclick="passerEtapePin()">Continuer →</button>
+    </div>
+  </div>
+
+  <div class="auth-body" id="auth-step-pin" style="display:none">
+    <button onclick="showAuthStep('profil')" style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--texte3);margin-bottom:24px">
+      ← Retour
+    </button>
+    <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Créez votre Code PIN 🔒</h2>
+    <p style="font-size:14px;color:var(--texte3);margin-bottom:28px">Ce code à 4 chiffres protège vos actions sensibles : sponsoriser une annonce, changer d'abonnement, ou tout futur retrait Mobile Money. Il est différent du code reçu par email.</p>
+    <div class="otp-inputs" id="pin-inputs-creation">
+      <input class="otp-inp" maxlength="1" inputmode="numeric" type="password">
+      <input class="otp-inp" maxlength="1" inputmode="numeric" type="password">
+      <input class="otp-inp" maxlength="1" inputmode="numeric" type="password">
+      <input class="otp-inp" maxlength="1" inputmode="numeric" type="password">
+    </div>
+    <label class="lbl" style="margin-top:-14px;display:block;margin-bottom:8px">Confirmez le Code PIN</label>
+    <div class="otp-inputs" id="pin-inputs-confirmation">
+      <input class="otp-inp" maxlength="1" inputmode="numeric" type="password">
+      <input class="otp-inp" maxlength="1" inputmode="numeric" type="password">
+      <input class="otp-inp" maxlength="1" inputmode="numeric" type="password">
+      <input class="otp-inp" maxlength="1" inputmode="numeric" type="password">
+    </div>
+    <p id="pin-erreur" style="font-size:12px;color:var(--rouge);text-align:center;margin:-14px 0 14px;display:none">Les deux codes ne correspondent pas</p>
+    <button class="btn btn-v btn-block" id="btn-finaliser-pin" style="height:50px;font-size:15px" disabled onclick="creerProfil()">Finaliser mon compte ✓</button>
+    <div style="margin-top:20px;padding:14px;background:#FFFBEB;border-radius:var(--r);font-size:12px;color:#92400E;border:1px solid #FDE68A">
+      🔒 Ne partagez jamais ce code. LocalOpps ne vous le demandera jamais par téléphone ou message.
     </div>
   </div>
   </div>
@@ -1225,7 +1289,66 @@ img{display:block;max-width:100%}
 
 </div><!-- /#app-shell -->
 
+<!-- Modal Code PIN — pour toute action sensible (paiement, abonnement, retrait) -->
+<div class="overlay" id="overlay-pin" onclick="event.target===this&&fermerModalPin()">
+  <div class="sheet" onclick="event.stopPropagation()" style="text-align:center">
+    <div class="sheet-handle"></div>
+    <div style="font-size:36px;margin-bottom:10px">🔒</div>
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:6px">Confirmez avec votre Code PIN</h3>
+    <p id="pin-modal-desc" style="font-size:13px;color:var(--texte3);margin-bottom:20px">Action sécurisée — entrez votre code à 4 chiffres</p>
+    <div class="otp-inputs" id="pin-inputs-verif" style="margin-bottom:8px">
+      <input class="otp-inp" maxlength="1" inputmode="numeric" type="password">
+      <input class="otp-inp" maxlength="1" inputmode="numeric" type="password">
+      <input class="otp-inp" maxlength="1" inputmode="numeric" type="password">
+      <input class="otp-inp" maxlength="1" inputmode="numeric" type="password">
+    </div>
+    <p id="pin-modal-erreur" style="font-size:12px;color:var(--rouge);margin-bottom:14px;display:none">Code incorrect, réessayez</p>
+    <button class="btn btn-g btn-block" onclick="fermerModalPin()">Annuler</button>
+  </div>
+</div>
+
 <script>
+// ============================================================
+// CODE PIN — vérification avant actions sensibles
+// ============================================================
+let pinCallbackSucces = null
+
+function demanderPin(description, callbackSucces) {
+  if (!userData?.pin) {
+    alert('Aucun Code PIN configuré sur ce compte. Veuillez le définir dans votre profil.')
+    return
+  }
+  pinCallbackSucces = callbackSucces
+  document.getElementById('pin-modal-desc').textContent = description || 'Action sécurisée — entrez votre code à 4 chiffres'
+  document.getElementById('pin-modal-erreur').style.display = 'none'
+  document.getElementById('overlay-pin').classList.add('show')
+  initOTPInputs(document.getElementById('pin-inputs-verif'), null, 4)
+  document.querySelectorAll('#pin-inputs-verif .otp-inp').forEach(inp=>{
+    inp.addEventListener('input', verifierPinSaisi)
+  })
+}
+function verifierPinSaisi() {
+  const saisi = [...document.querySelectorAll('#pin-inputs-verif .otp-inp')].map(x=>x.value).join('')
+  if (saisi.length < 4) return
+  if (saisi === userData.pin) {
+    document.getElementById('overlay-pin').classList.remove('show')
+    const callback = pinCallbackSucces
+    pinCallbackSucces = null
+    if (callback) callback()
+  } else {
+    document.getElementById('pin-modal-erreur').style.display = 'block'
+    document.querySelectorAll('#pin-inputs-verif .otp-inp').forEach(i=>{i.style.borderColor='var(--rouge)';i.value='';i.classList.remove('filled')})
+    setTimeout(()=>{
+      document.querySelectorAll('#pin-inputs-verif .otp-inp').forEach(i=>i.style.borderColor='')
+      document.querySelector('#pin-inputs-verif .otp-inp').focus()
+    }, 600)
+  }
+}
+function fermerModalPin() {
+  document.getElementById('overlay-pin').classList.remove('show')
+  pinCallbackSucces = null
+}
+
 // ============================================================
 // CONNEXION SUPABASE
 // ============================================================
@@ -1396,6 +1519,7 @@ let ongletAlerte = 'actives'
 let ongletProfil = 'annonces'
 let prefAlertes = {sante:true,emploi:true,affaires:false,urgences:true,donneur:true}
 let userData = null
+let userDataPinTemp = null
 
 // ============================================================
 // NAVIGATION
@@ -1715,7 +1839,15 @@ function etapePub(dir) {
     setTimeout(()=>document.getElementById('btn-suivant-pub').style.background='var(--vert)',600)
     return
   }
-  if(dir===1 && etapePubActuelle===5) { publierAnnonce(); return }
+  if(dir===1 && etapePubActuelle===5) {
+    const opt = DIFFUSIONS.find(o=>o.id===diffusionSel)
+    if (opt?.prix) {
+      demanderPin(`Confirmez le paiement de ${opt.prix.toLocaleString('fr-FR')} FCFA pour la diffusion`, publierAnnonce)
+    } else {
+      publierAnnonce()
+    }
+    return
+  }
   etapePubActuelle = Math.max(1,Math.min(5,etapePubActuelle+dir))
   document.querySelectorAll('[id^="etape-"]').forEach(e=>e.style.display='none')
   document.getElementById('etape-'+etapePubActuelle).style.display='block'
@@ -2007,7 +2139,7 @@ function rendreProfilContent() {
           <ul style="list-style:none;display:flex;flex-direction:column;gap:5px">
             ${ab.features.map(f=>`<li style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--texte2)"><span style="color:var(--vert);font-weight:700">✓</span>${f}</li>`).join('')}
           </ul>
-          ${ab.id!=='gratuit'?`<button class="btn btn-v btn-block" style="margin-top:12px;height:40px;font-size:13px" onclick="alert('Redirection vers le paiement CinetPay...')">Choisir ce plan</button>`:''}
+          ${ab.id!=='gratuit'?`<button class="btn btn-v btn-block" style="margin-top:12px;height:40px;font-size:13px" onclick="demanderPin('Confirmez l\\'abonnement ${ab.nom} — ${ab.prix.toLocaleString('fr-FR')} FCFA/mois', ()=>alert('Redirection vers le paiement CinetPay...'))">Choisir ce plan</button>`:''}
         </div>`).join('')}
     `
   }
@@ -2028,26 +2160,86 @@ function deconnexion() {
 // ============================================================
 // AUTH
 // ============================================================
+// Annuaire simulé des comptes créés pendant la session (remplacé par Supabase Auth en production)
+let comptesInscrits = {}
+
+function switchAuthTab(tab) {
+  document.getElementById('auth-tab-connexion').classList.toggle('actif', tab==='connexion')
+  document.getElementById('auth-tab-inscription').classList.toggle('actif', tab==='inscription')
+  document.getElementById('auth-bloc-connexion').style.display = tab==='connexion' ? 'block' : 'none'
+  document.getElementById('auth-bloc-inscription').style.display = tab==='inscription' ? 'block' : 'none'
+}
+function majBoutonConnexion() {
+  const email = document.getElementById('conn-email').value
+  const pass = document.getElementById('conn-password').value
+  document.getElementById('btn-connexion').disabled = !email.includes('@') || pass.length < 6
+}
+function majBoutonInscription() {
+  const email = document.getElementById('inp-tel').value
+  const pass = document.getElementById('insc-password').value
+  document.getElementById('btn-otp').disabled = !email.includes('@') || email.length < 6 || pass.length < 6
+}
+async function connecterUtilisateur() {
+  const email = document.getElementById('conn-email').value
+  const pass = document.getElementById('conn-password').value
+  const btn = document.getElementById('btn-connexion')
+  btn.innerHTML = '<span class="spinner"></span>'
+  btn.disabled = true
+  await new Promise(r=>setTimeout(r,700))
+
+  const compte = comptesInscrits[email]
+  if (!compte || compte.password !== pass) {
+    btn.innerHTML = 'Se connecter'
+    btn.disabled = false
+    document.getElementById('conn-password').style.borderColor = 'var(--rouge)'
+    setTimeout(()=>document.getElementById('conn-password').style.borderColor='', 1500)
+    alert('Email ou mot de passe incorrect. (Démo : créez d\'abord un compte via "Créer un compte")')
+    return
+  }
+
+  // Connexion réussie — directe, sans OTP
+  userData = compte.profil
+  appliquerProfilConnecte()
+  btn.innerHTML = 'Se connecter'
+  btn.disabled = false
+}
+function appliquerProfilConnecte() {
+  const {prenom, nom, commune} = userData
+  document.getElementById('profil-av').textContent = prenom[0]+nom[0]
+  document.getElementById('profil-nom').textContent = prenom+' '+nom
+  document.getElementById('profil-sub').textContent = (commune||'Abidjan')+' · Membre'
+  document.getElementById('user-commune').textContent = (commune||'Yopougon')+', Abidjan'
+  document.getElementById('dnav-avatar').textContent = prenom[0]+nom[0]
+  document.getElementById('dnav-commune').textContent = (commune||'Yopougon')+', Abidjan'
+  document.getElementById('nav-bas').style.display='flex'
+  document.body.classList.remove('auth-mode')
+  document.body.classList.add('app-mode')
+  naviguer('accueil')
+}
+
 function showAuthStep(step) {
-  ['tel','otp','profil'].forEach(s=>document.getElementById('auth-step-'+s).style.display=s===step?'block':'none')
+  ['tel','otp','profil','pin'].forEach(s=>document.getElementById('auth-step-'+s).style.display=s===step?'block':'none')
 }
 function envoyerOTP() {
-  const tel = document.getElementById('inp-tel').value
-  if(tel.length < 8) return
+  const email = document.getElementById('inp-tel').value
+  const pass = document.getElementById('insc-password').value
+  if(!email.includes('@') || email.length < 6 || pass.length < 6) return
+  document.getElementById('email-affiche').textContent = email
   showAuthStep('otp')
-  initOTPInputs()
+  initOTPInputs(document.getElementById('otp-inputs'), 'btn-verif', 6)
 }
-function initOTPInputs() {
-  const inputs = document.querySelectorAll('.otp-inp')
+function initOTPInputs(conteneur, idBouton, longueur) {
+  const inputs = conteneur.querySelectorAll('.otp-inp')
   inputs.forEach((inp,i)=>{
     inp.value=''
     inp.classList.remove('filled')
+    inp.style.borderColor=''
     inp.oninput=e=>{
       if(!/^\d$/.test(inp.value)){inp.value='';return}
       inp.classList.add('filled')
-      if(i<5) inputs[i+1].focus()
+      if(i<inputs.length-1) inputs[i+1].focus()
       const code = [...inputs].map(x=>x.value).join('')
-      document.getElementById('btn-verif').disabled = code.length<6
+      if (idBouton) document.getElementById(idBouton).disabled = code.length<longueur
     }
     inp.onkeydown=e=>{
       if(e.key==='Backspace'&&!inp.value&&i>0){inp.classList.remove('filled');inputs[i-1].focus()}
@@ -2056,10 +2248,10 @@ function initOTPInputs() {
   setTimeout(()=>inputs[0].focus(),100)
 }
 async function verifierOTP() {
-  const code = [...document.querySelectorAll('.otp-inp')].map(x=>x.value).join('')
+  const code = [...document.querySelectorAll('#otp-inputs .otp-inp')].map(x=>x.value).join('')
   if(code !== '123456') {
-    document.querySelectorAll('.otp-inp').forEach(i=>i.style.borderColor='var(--rouge)')
-    setTimeout(()=>document.querySelectorAll('.otp-inp').forEach(i=>i.style.borderColor='var(--border)'),1500)
+    document.querySelectorAll('#otp-inputs .otp-inp').forEach(i=>i.style.borderColor='var(--rouge)')
+    setTimeout(()=>document.querySelectorAll('#otp-inputs .otp-inp').forEach(i=>i.style.borderColor='var(--border)'),1500)
     return
   }
   const btn = document.getElementById('btn-verif')
@@ -2070,22 +2262,39 @@ async function verifierOTP() {
   btn.innerHTML='Confirmer'
   btn.disabled=false
 }
+function passerEtapePin() {
+  const prenom = document.getElementById('inp-prenom').value
+  const nom = document.getElementById('inp-nom').value
+  if(!prenom||!nom) { alert('Veuillez remplir prénom et nom'); return }
+  showAuthStep('pin')
+  initOTPInputs(document.getElementById('pin-inputs-creation'), null, 4)
+  initOTPInputs(document.getElementById('pin-inputs-confirmation'), null, 4)
+  // Vérifie la cohérence des 2 saisies à chaque frappe
+  const verifierCorrespondance = () => {
+    const pin1 = [...document.querySelectorAll('#pin-inputs-creation .otp-inp')].map(x=>x.value).join('')
+    const pin2 = [...document.querySelectorAll('#pin-inputs-confirmation .otp-inp')].map(x=>x.value).join('')
+    const erreurEl = document.getElementById('pin-erreur')
+    const btnFinal = document.getElementById('btn-finaliser-pin')
+    if (pin1.length===4 && pin2.length===4) {
+      if (pin1===pin2) { erreurEl.style.display='none'; btnFinal.disabled=false; userDataPinTemp=pin1 }
+      else { erreurEl.style.display='block'; btnFinal.disabled=true }
+    } else {
+      erreurEl.style.display='none'; btnFinal.disabled=true
+    }
+  }
+  document.querySelectorAll('#pin-inputs-creation .otp-inp, #pin-inputs-confirmation .otp-inp')
+    .forEach(inp=>inp.addEventListener('input', verifierCorrespondance))
+}
 async function creerProfil() {
   const prenom = document.getElementById('inp-prenom').value
   const nom = document.getElementById('inp-nom').value
   const commune = document.getElementById('inp-commune').value
-  if(!prenom||!nom) { alert('Veuillez remplir prénom et nom'); return }
-  userData = {prenom,nom,commune:commune||'Abidjan'}
-  document.getElementById('profil-av').textContent = prenom[0]+nom[0]
-  document.getElementById('profil-nom').textContent = prenom+' '+nom
-  document.getElementById('profil-sub').textContent = (commune||'Abidjan')+' · Membre depuis 1 jour'
-  document.getElementById('user-commune').textContent = (commune||'Yopougon')+', Abidjan'
-  document.getElementById('dnav-avatar').textContent = prenom[0]+nom[0]
-  document.getElementById('dnav-commune').textContent = (commune||'Yopougon')+', Abidjan'
-  document.getElementById('nav-bas').style.display='flex'
-  document.body.classList.remove('auth-mode')
-  document.body.classList.add('app-mode')
-  naviguer('accueil')
+  const email = document.getElementById('inp-tel').value
+  const password = document.getElementById('insc-password').value
+  userData = {prenom,nom,commune:commune||'Abidjan',email,pin:userDataPinTemp}
+  // Enregistrer le compte dans l'annuaire pour permettre une future connexion simple
+  comptesInscrits[email] = {password, profil: userData}
+  appliquerProfilConnecte()
 }
 
 // ============================================================
@@ -2116,14 +2325,17 @@ function fermerOverlay(id) {
 function toggleMenuMobile() {
   document.getElementById('menu-mobile').classList.toggle('open')
 }
-function entrerApp(etape) {
+function entrerApp(onglet) {
   document.getElementById('landing').style.display = 'none'
   document.getElementById('app-shell').style.display = 'block'
   document.body.classList.add('in-app')
   document.body.classList.toggle('auth-mode', !userData)
   document.body.classList.toggle('app-mode', !!userData)
   naviguer(userData ? 'accueil' : 'connexion')
-  if (!userData) showAuthStep(etape || 'tel')
+  if (!userData) {
+    showAuthStep('tel')
+    switchAuthTab(onglet === 'inscription' ? 'inscription' : 'connexion')
+  }
   window.scrollTo(0,0)
 }
 function retourLanding() {
