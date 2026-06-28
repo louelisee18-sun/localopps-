@@ -814,9 +814,6 @@ img{display:block;max-width:100%}
         Recevoir le code de vérification
       </button>
       <p style="font-size:12px;color:var(--pale);text-align:center;margin-top:14px">En continuant, vous acceptez nos conditions d'utilisation</p>
-      <div style="margin-top:24px;padding:14px;background:var(--vert-p);border-radius:var(--r);font-size:13px;color:var(--vert)">
-        💡 <strong>Démo :</strong> Entrez n'importe quel email et le code OTP sera <strong>123456</strong>
-      </div>
     </div>
   </div>
 
@@ -835,7 +832,7 @@ img{display:block;max-width:100%}
       <input class="otp-inp" maxlength="1" inputmode="numeric" type="text">
     </div>
     <button class="btn btn-v btn-block" id="btn-verif" style="height:50px;font-size:15px" disabled onclick="verifierOTP()">Confirmer mon inscription</button>
-    <p style="font-size:13px;color:var(--pale);text-align:center;margin-top:14px" id="otp-hint">Code de démo : 123456</p>
+    <p style="font-size:13px;color:var(--pale);text-align:center;margin-top:14px" id="otp-hint">Vérifiez aussi vos spams si vous ne voyez rien</p>
   </div>
 
   <div class="auth-body" id="auth-step-profil" style="display:none">
@@ -1368,6 +1365,34 @@ async function supabaseRequest(table, method='GET', body=null, params='') {
   const res = await fetch(url, opts)
   if (!res.ok) { console.error('Erreur Supabase', await res.text()); return null }
   return (method === 'GET' || method === 'POST') ? res.json() : true
+}
+
+// ---- Authentification réelle par email OTP (Supabase Auth) ----
+async function supabaseEnvoyerOTP(email) {
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/otp`, {
+    method: 'POST',
+    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, create_user: true }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(()=>({}))
+    return { succes: false, erreur: err.msg || err.error_description || 'Erreur d\'envoi du code' }
+  }
+  return { succes: true }
+}
+
+async function supabaseVerifierOTP(email, code) {
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/verify`, {
+    method: 'POST',
+    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, token: code, type: 'email' }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(()=>({}))
+    return { succes: false, erreur: err.msg || err.error_description || 'Code incorrect ou expiré' }
+  }
+  const data = await res.json()
+  return { succes: true, session: data }
 }
 
 async function chargerAnnoncesDepuisSupabase() {
@@ -2220,10 +2245,26 @@ function appliquerProfilConnecte() {
 function showAuthStep(step) {
   ['tel','otp','profil','pin'].forEach(s=>document.getElementById('auth-step-'+s).style.display=s===step?'block':'none')
 }
-function envoyerOTP() {
+async function envoyerOTP() {
   const email = document.getElementById('inp-tel').value
   const pass = document.getElementById('insc-password').value
   if(!email.includes('@') || email.length < 6 || pass.length < 6) return
+
+  const btn = document.getElementById('btn-otp')
+  const texteOriginal = btn.textContent
+  btn.disabled = true
+  btn.innerHTML = '<span class="spinner"></span> Envoi en cours...'
+
+  const resultat = await supabaseEnvoyerOTP(email)
+
+  btn.disabled = false
+  btn.textContent = texteOriginal
+
+  if (!resultat.succes) {
+    alert('Impossible d\'envoyer le code : ' + resultat.erreur)
+    return
+  }
+
   document.getElementById('email-affiche').textContent = email
   showAuthStep('otp')
   initOTPInputs(document.getElementById('otp-inputs'), 'btn-verif', 6)
@@ -2249,17 +2290,25 @@ function initOTPInputs(conteneur, idBouton, longueur) {
 }
 async function verifierOTP() {
   const code = [...document.querySelectorAll('#otp-inputs .otp-inp')].map(x=>x.value).join('')
-  if(code !== '123456') {
-    document.querySelectorAll('#otp-inputs .otp-inp').forEach(i=>i.style.borderColor='var(--rouge)')
-    setTimeout(()=>document.querySelectorAll('#otp-inputs .otp-inp').forEach(i=>i.style.borderColor='var(--border)'),1500)
-    return
-  }
+  const email = document.getElementById('inp-tel').value
+
   const btn = document.getElementById('btn-verif')
   btn.innerHTML='<span class="spinner"></span>'
   btn.disabled=true
-  await new Promise(r=>setTimeout(r,1000))
+
+  const resultat = await supabaseVerifierOTP(email, code)
+
+  if (!resultat.succes) {
+    document.querySelectorAll('#otp-inputs .otp-inp').forEach(i=>i.style.borderColor='var(--rouge)')
+    setTimeout(()=>document.querySelectorAll('#otp-inputs .otp-inp').forEach(i=>i.style.borderColor='var(--border)'),1500)
+    btn.innerHTML='Confirmer mon inscription'
+    btn.disabled=false
+    alert('Code incorrect : ' + resultat.erreur)
+    return
+  }
+
   showAuthStep('profil')
-  btn.innerHTML='Confirmer'
+  btn.innerHTML='Confirmer mon inscription'
   btn.disabled=false
 }
 function passerEtapePin() {
