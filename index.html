@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>LocalOpps — Opportunités de proximité</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -544,7 +545,6 @@ img{display:block;max-width:100%}
   .land-footer-grid p{margin:0 auto}
 }
 </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -1350,8 +1350,6 @@ function fermerModalPin() {
 // ============================================================
 // CONNEXION SUPABASE
 // ============================================================
-const SUPABASE_URL = "https://TON_PROJET_ID.supabase.co";
-const SUPABASE_ANON_KEY = "TA_CLE_ANON_SUPABASE";
 
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const SUPABASE_URL = 'https://vjgozujawftnicbypjsv.supabase.co'
