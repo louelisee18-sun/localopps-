@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>LocalOpps — Opportunités de proximité</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -1350,8 +1349,6 @@ function fermerModalPin() {
 // ============================================================
 // CONNEXION SUPABASE
 // ============================================================
-
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const SUPABASE_URL = 'https://vjgozujawftnicbypjsv.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqZ296dWphd2Z0bmljYnlwanN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyMzYxNjEsImV4cCI6MjA5NzgxMjE2MX0.47Qkj7S61ugl6v4MYG53-lNv1FSPDW-Q5M47wlxvc1U'
 
@@ -1371,78 +1368,31 @@ async function supabaseRequest(table, method='GET', body=null, params='') {
 }
 
 // ---- Authentification réelle par email OTP (Supabase Auth) ----
-// FUNCTION 1 : Pour la connexion directe (Sans code OTP)
-async function gererConnexion(emailUtilisateur) {
-  try {
-    const { data, error } = await supabase.auth.signInWithOtp({
-      email: emailUtilisateur,
-      options: {
-        shouldCreateUser: false // Bloque et fait une erreur si le compte n'existe pas
-      }
-    });
-
-    if (error) {
-      throw new Error("Vos coordonnées sont incorrectes ou ce compte n'existe pas.");
-    }
-
-    // Si le compte existe, on le connecte directement à l'application !
-    alert("Connexion réussie ! Bienvenue sur LocalOpps.");
-    
-    userData = { email: emailUtilisateur }; 
-    document.body.classList.remove('auth-mode');
-    document.body.classList.add('app-mode');
-    naviguer('accueil');
-
-  } catch (error) {
-    alert("Erreur de connexion : " + error.message);
+async function supabaseEnvoyerOTP(email) {
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/otp`, {
+    method: 'POST',
+    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, create_user: true }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(()=>({}))
+    return { succes: false, erreur: err.msg || err.error_description || 'Erreur d\'envoi du code' }
   }
+  return { succes: true }
 }
 
-// FUNCTION 2 : Pour l'inscription (Envoi du code OTP)
-async function gererInscription(emailUtilisateur) {
-  try {
-    const { data, error } = await supabase.auth.signInWithOtp({
-      email: emailUtilisateur,
-      options: {
-        shouldCreateUser: true // Crée le compte si l'e-mail est nouveau
-      }
-    });
-
-    if (error) throw error;
-
-    alert("Pour finaliser votre inscription, un code secret a été envoyé à : " + emailUtilisateur);
-    showAuthStep('code'); // On montre la case pour taper le code à 6 chiffres
-    
-  } catch (error) {
-    alert("Erreur lors de l'inscription : " + error.message);
+async function supabaseVerifierOTP(email, code) {
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/verify`, {
+    method: 'POST',
+    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, token: code, type: 'email' }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(()=>({}))
+    return { succes: false, erreur: err.msg || err.error_description || 'Code incorrect ou expiré' }
   }
-}
-
-// FUNCTION 3 : Pour valider le code (Uniquement utilisé après l'inscription)
-async function validerCodeInscription(emailUtilisateur, codeSaisi) {
-  try {
-    const { data, error } = await supabase.auth.verifyOtp({
-      email: emailUtilisateur,
-      token: codeSaisi,
-      type: 'email'
-    });
-
-    if (error) throw error;
-
-    alert("Inscription validée avec succès !");
-    
-    userData = {
-      id: data.user.id,
-      email: data.user.email
-    };
-    
-    document.body.classList.remove('auth-mode');
-    document.body.classList.add('app-mode');
-    naviguer('accueil');
-
-  } catch (error) {
-    alert("Le code d'inscription est incorrect ou a expiré.");
-  }
+  const data = await res.json()
+  return { succes: true, session: data }
 }
 
 async function chargerAnnoncesDepuisSupabase() {
@@ -2238,26 +2188,11 @@ function deconnexion() {
 // Annuaire simulé des comptes créés pendant la session (remplacé par Supabase Auth en production)
 let comptesInscrits = {}
 
-function switchAuthTab(type) {
-  const tabConnexion = document.getElementById('tab-connexion');
-  const tabInscription = document.getElementById('tab-inscription');
-  const btnOtp = document.getElementById('btn-otp');
-  const blocInpAuth = document.getElementById('bloc-inp-auth'); // zone email inscription
-  const blocInpConnexion = document.getElementById('bloc-inp-connexion'); // zone email connexion
-
-  if (type === 'connexion') {
-    tabConnexion.classList.add('actif');
-    tabInscription.classList.remove('actif');
-    if(blocInpConnexion) blocInpConnexion.style.display = 'block';
-    if(blocInpAuth) blocInpAuth.style.display = 'none';
-    if(btnOtp) btnOtp.textContent = "Se connecter directement";
-  } else {
-    tabInscription.classList.add('actif');
-    tabConnexion.classList.remove('actif');
-    if(blocInpAuth) blocInpAuth.style.display = 'block';
-    if(blocInpConnexion) blocInpConnexion.style.display = 'none';
-    if(btnOtp) btnOtp.textContent = "Recevoir le code";
-  }
+function switchAuthTab(tab) {
+  document.getElementById('auth-tab-connexion').classList.toggle('actif', tab==='connexion')
+  document.getElementById('auth-tab-inscription').classList.toggle('actif', tab==='inscription')
+  document.getElementById('auth-bloc-connexion').style.display = tab==='connexion' ? 'block' : 'none'
+  document.getElementById('auth-bloc-inscription').style.display = tab==='inscription' ? 'block' : 'none'
 }
 function majBoutonConnexion() {
   const email = document.getElementById('conn-email').value
@@ -2311,80 +2246,28 @@ function showAuthStep(step) {
   ['tel','otp','profil','pin'].forEach(s=>document.getElementById('auth-step-'+s).style.display=s===step?'block':'none')
 }
 async function envoyerOTP() {
-  // Récupère l'e-mail depuis le bon identifiant de ton formulaire actuel
-  const email = document.getElementById('inp-email-auth')?.value || document.getElementById('inp-email-connexion')?.value;
-  
-  if (!email || !email.includes('@') || email.length < 6) {
-    alert("Veuillez entrer une adresse e-mail valide.");
-    return;
+  const email = document.getElementById('inp-tel').value
+  const pass = document.getElementById('insc-password').value
+  if(!email.includes('@') || email.length < 6 || pass.length < 6) return
+
+  const btn = document.getElementById('btn-otp')
+  const texteOriginal = btn.textContent
+  btn.disabled = true
+  btn.innerHTML = '<span class="spinner"></span> Envoi en cours...'
+
+  const resultat = await supabaseEnvoyerOTP(email)
+
+  btn.disabled = false
+  btn.textContent = texteOriginal
+
+  if (!resultat.succes) {
+    alert('Impossible d\'envoyer le code : ' + resultat.erreur)
+    return
   }
 
-  const btn = document.getElementById('btn-otp');
-  const texteOriginal = btn.textContent;
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Envoi...';
-
-  // Vérifie si l'onglet actif dans ton interface est l'inscription
-  const estInscription = document.getElementById('tab-inscription')?.classList.contains('actif');
-
-  try {
-    if (estInscription) {
-      // ==========================================
-      // CAS 1 : INSCRIPTION (Envoi du code OTP)
-      // ==========================================
-      const { data, error } = await supabase.auth.signInWithOtp({
-        email: email,
-        options: { shouldCreateUser: true } // Crée l'utilisateur s'il n'existe pas
-      });
-
-      if (error) throw error;
-
-      alert("Pour finaliser votre inscription, un code secret a été envoyé à : " + email);
-      
-      // Met à jour l'affichage de ton interface d'origine
-      const elAffichage = document.getElementById('email-affiche');
-      if (elAffichage) elAffichage.textContent = email;
-      
-      // Bascule vers l'étape de saisie du code (ID d'étape de ton fichier)
-      showAuthStep('otp');
-      initOTPInputs(document.getElementById('otp-inputs'), 'btn-verif', 6);
-
-    } else {
-      // ==========================================
-      // CAS 2 : CONNEXION DIRECTE (Sans code)
-      // ==========================================
-      const { data, error } = await supabase.auth.signInWithOtp({
-        email: email,
-        options: { shouldCreateUser: false } // Bloque la connexion si le compte n'existe pas
-      });
-
-      if (error) {
-        throw new Error("Vos coordonnées sont incorrectes ou ce compte n'existe pas. Veuillez vous inscrire.");
-      }
-
-      // Si aucune erreur, le compte existe : on le connecte immédiatement
-      alert("Connexion réussie ! Bienvenue sur LocalOpps.");
-      
-      // Initialise la session globale de ton application
-      userData = { 
-        id: "user-" + Date.now(), 
-        email: email, 
-        prenom: "Utilisateur", 
-        nom: "Connecté" 
-      };
-
-      // Applique les changements de classe CSS déjà présents dans ton fichier
-      document.body.classList.remove('auth-mode');
-      document.body.classList.add('app-mode');
-      naviguer('accueil');
-    }
-
-  } catch (error) {
-    alert(error.message);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = texteOriginal;
-  }
+  document.getElementById('email-affiche').textContent = email
+  showAuthStep('otp')
+  initOTPInputs(document.getElementById('otp-inputs'), 'btn-verif', 6)
 }
 function initOTPInputs(conteneur, idBouton, longueur) {
   const inputs = conteneur.querySelectorAll('.otp-inp')
@@ -2406,52 +2289,27 @@ function initOTPInputs(conteneur, idBouton, longueur) {
   setTimeout(()=>inputs[0].focus(),100)
 }
 async function verifierOTP() {
-  const email = document.getElementById('inp-email-auth')?.value;
-  
-  // Récupère les chiffres saisis dans ton bloc otp-inputs
-  const inputs = document.querySelectorAll('#otp-inputs .otp-inp');
-  let codeSaisi = "";
-  inputs.forEach(inp => codeSaisi += inp.value);
+  const code = [...document.querySelectorAll('#otp-inputs .otp-inp')].map(x=>x.value).join('')
+  const email = document.getElementById('inp-tel').value
 
-  if (codeSaisi.length < 6) {
-    alert("Veuillez entrer le code complet à 6 chiffres.");
-    return;
+  const btn = document.getElementById('btn-verif')
+  btn.innerHTML='<span class="spinner"></span>'
+  btn.disabled=true
+
+  const resultat = await supabaseVerifierOTP(email, code)
+
+  if (!resultat.succes) {
+    document.querySelectorAll('#otp-inputs .otp-inp').forEach(i=>i.style.borderColor='var(--rouge)')
+    setTimeout(()=>document.querySelectorAll('#otp-inputs .otp-inp').forEach(i=>i.style.borderColor='var(--border)'),1500)
+    btn.innerHTML='Confirmer mon inscription'
+    btn.disabled=false
+    alert('Code incorrect : ' + resultat.erreur)
+    return
   }
 
-  const btn = document.getElementById('btn-verif');
-  const texteOriginal = btn.textContent;
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Vérification...';
-
-  try {
-    // Validation du jeton OTP auprès de Supabase
-    const { data, error } = await supabase.auth.verifyOtp({
-      email: email,
-      token: codeSaisi,
-      type: 'email'
-    });
-
-    if (error) throw error;
-
-    alert("Inscription validée avec succès !");
-    
-    // Enregistre les informations d'authentification reçues de Supabase
-    userData = {
-      id: data.user.id,
-      email: data.user.email,
-      prenom: "Nouveau",
-      nom: "Membre"
-    };
-
-    // Aligne sur l'étape de création de profil propre à ton application
-    showAuthStep('profil');
-
-  } catch (error) {
-    alert("Le code d'inscription est incorrect ou a expiré.");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = texteOriginal;
-  }
+  showAuthStep('profil')
+  btn.innerHTML='Confirmer mon inscription'
+  btn.disabled=false
 }
 function passerEtapePin() {
   const prenom = document.getElementById('inp-prenom').value
