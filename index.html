@@ -544,6 +544,7 @@ img{display:block;max-width:100%}
   .land-footer-grid p{margin:0 auto}
 }
 </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -1349,6 +1350,10 @@ function fermerModalPin() {
 // ============================================================
 // CONNEXION SUPABASE
 // ============================================================
+const SUPABASE_URL = "https://TON_PROJET_ID.supabase.co";
+const SUPABASE_ANON_KEY = "TA_CLE_ANON_SUPABASE";
+
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const SUPABASE_URL = 'https://vjgozujawftnicbypjsv.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqZ296dWphd2Z0bmljYnlwanN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyMzYxNjEsImV4cCI6MjA5NzgxMjE2MX0.47Qkj7S61ugl6v4MYG53-lNv1FSPDW-Q5M47wlxvc1U'
 
@@ -1368,31 +1373,78 @@ async function supabaseRequest(table, method='GET', body=null, params='') {
 }
 
 // ---- Authentification réelle par email OTP (Supabase Auth) ----
-async function supabaseEnvoyerOTP(email) {
-  const res = await fetch(`${SUPABASE_URL}/auth/v1/otp`, {
-    method: 'POST',
-    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, create_user: true }),
-  })
-  if (!res.ok) {
-    const err = await res.json().catch(()=>({}))
-    return { succes: false, erreur: err.msg || err.error_description || 'Erreur d\'envoi du code' }
+// FUNCTION 1 : Pour la connexion directe (Sans code OTP)
+async function gererConnexion(emailUtilisateur) {
+  try {
+    const { data, error } = await supabase.auth.signInWithOtp({
+      email: emailUtilisateur,
+      options: {
+        shouldCreateUser: false // Bloque et fait une erreur si le compte n'existe pas
+      }
+    });
+
+    if (error) {
+      throw new Error("Vos coordonnées sont incorrectes ou ce compte n'existe pas.");
+    }
+
+    // Si le compte existe, on le connecte directement à l'application !
+    alert("Connexion réussie ! Bienvenue sur LocalOpps.");
+    
+    userData = { email: emailUtilisateur }; 
+    document.body.classList.remove('auth-mode');
+    document.body.classList.add('app-mode');
+    naviguer('accueil');
+
+  } catch (error) {
+    alert("Erreur de connexion : " + error.message);
   }
-  return { succes: true }
 }
 
-async function supabaseVerifierOTP(email, code) {
-  const res = await fetch(`${SUPABASE_URL}/auth/v1/verify`, {
-    method: 'POST',
-    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, token: code, type: 'email' }),
-  })
-  if (!res.ok) {
-    const err = await res.json().catch(()=>({}))
-    return { succes: false, erreur: err.msg || err.error_description || 'Code incorrect ou expiré' }
+// FUNCTION 2 : Pour l'inscription (Envoi du code OTP)
+async function gererInscription(emailUtilisateur) {
+  try {
+    const { data, error } = await supabase.auth.signInWithOtp({
+      email: emailUtilisateur,
+      options: {
+        shouldCreateUser: true // Crée le compte si l'e-mail est nouveau
+      }
+    });
+
+    if (error) throw error;
+
+    alert("Pour finaliser votre inscription, un code secret a été envoyé à : " + emailUtilisateur);
+    showAuthStep('code'); // On montre la case pour taper le code à 6 chiffres
+    
+  } catch (error) {
+    alert("Erreur lors de l'inscription : " + error.message);
   }
-  const data = await res.json()
-  return { succes: true, session: data }
+}
+
+// FUNCTION 3 : Pour valider le code (Uniquement utilisé après l'inscription)
+async function validerCodeInscription(emailUtilisateur, codeSaisi) {
+  try {
+    const { data, error } = await supabase.auth.verifyOtp({
+      email: emailUtilisateur,
+      token: codeSaisi,
+      type: 'email'
+    });
+
+    if (error) throw error;
+
+    alert("Inscription validée avec succès !");
+    
+    userData = {
+      id: data.user.id,
+      email: data.user.email
+    };
+    
+    document.body.classList.remove('auth-mode');
+    document.body.classList.add('app-mode');
+    naviguer('accueil');
+
+  } catch (error) {
+    alert("Le code d'inscription est incorrect ou a expiré.");
+  }
 }
 
 async function chargerAnnoncesDepuisSupabase() {
